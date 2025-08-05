@@ -1,0 +1,9 @@
+selenium
+webdriver-manager
+pandas
+openpyxl
+python-dotenv
+flask-cors
+reportlab
+waitress
+PyPDF2
