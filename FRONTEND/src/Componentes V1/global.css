@@ -1,0 +1,286 @@
+/* Simplificando CSS eliminando directivas problemáticas de Tailwind */
+@import "tailwindcss";
+
+/* Variables CSS personalizadas */
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --primary: #28a745;
+  --primary-hover: #218838;
+  --primary-dark: #1e7e34;
+  --success: #155724;
+  --success-bg: #d4edda;
+  --error: #dc3545;
+  --error-bg: #f8d7da;
+  --border: #e9ecef;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f4f7f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--foreground);
+}
+
+/* Estilos principales del contenedor */
+.cert-container {
+  max-width: 500px;
+  background-color: var(--background);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px var(--shadow);
+  text-align: center;
+}
+
+.cert-logo {
+  display: block;
+  max-width: 100%;
+  width: 300px;
+  height: auto;
+  margin: 0 auto 15px auto;
+  position: relative;
+  transform: none;
+  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.cert-content > * {
+  margin-top: 7px;
+}
+
+.cert-content > *:first-child {
+  margin-top: 0;
+}
+
+/* Estilos para los iconos de descarga */
+.download-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.icon-wrapper:hover {
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
+}
+
+.download-icon {
+  font-size: 24px;
+}
+
+/* Estilos para el creador de carpeta */
+.carpeta-creator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  max-width: 400px;
+  margin: auto;
+  margin-top: 1rem;
+}
+
+.input-carpeta {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid var(--primary);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--background);
+  color: #034d19;
+  transition: border-color 0.3s;
+}
+
+.input-carpeta::placeholder {
+  font-weight: bold;
+  color: #034d19;
+}
+
+.input-carpeta:focus {
+  border-color: #034d19;
+  outline: none;
+  color: #034d19;
+}
+
+.input-carpeta:focus::placeholder {
+  color: #2f9950;
+  text-shadow: 0.3px 0.3px 0.5px rgba(5, 58, 22, 0.02);
+}
+
+/* Estilos para el subidor de archivos */
+.file-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px dashed var(--primary);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+}
+
+.file-uploader:hover {
+  background-color: #e9f5ea;
+  border-color: var(--primary-hover);
+}
+
+.file-uploader.uploaded {
+  border: 2px solid var(--primary-hover);
+  background-color: #e6f9e6;
+}
+
+.file-uploader.error {
+  border: 2px solid var(--error);
+  background-color: var(--error-bg);
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+  color: var(--primary-hover);
+}
+
+.upload-icon.success {
+  color: var(--primary-hover);
+}
+
+.upload-icon.error {
+  color: var(--error);
+}
+
+.file-input {
+  display: none;
+}
+
+.file-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.file-uploader p {
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+  color: #034d19;
+  text-align: center;
+  margin: 0;
+}
+
+/* Estilos para botones */
+.cert-button {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin: 10px 0;
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px;
+}
+
+.cert-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
+}
+
+.cert-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Estilos para la barra de progreso */
+.progress-bar-container {
+  width: 100%;
+  background-color: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 15px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  transition: width 0.4s ease;
+}
+
+.progress-bar-container span {
+  font-weight: bold;
+  color: var(--success);
+}
+
+/* Estilos para el spinner */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--primary);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 15px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mensajes */
+.message {
+  font-weight: bold;
+  color: var(--success);
+  margin-top: 10px;
+}
+
+.mensaje-final {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--success);
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: var(--success-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow);
+}
