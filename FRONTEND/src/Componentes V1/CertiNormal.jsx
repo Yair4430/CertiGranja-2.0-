@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useRef } from "react"
 import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook, FaFolderPlus, FaUpload, FaDownload} from "react-icons/fa"
 import * as XLSX from "xlsx"
@@ -65,42 +63,35 @@ export default function CertiNormal() {
     }
   }, [isLoading])
 
-  const handleDownloadTemplate = async () => {
-    if (templateDownloaded) {
-      showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.")
-      return
-    }
-    setTemplateDownloaded(true)
-    try {
-      const response = await fetch(`${API_URL}/descargar-plantilla`)
-      if (!response.ok) throw new Error("No se pudo descargar la plantilla")
-      const data = await response.json()
-      const { archivo_base64, nombre } = data
-      const byteCharacters = atob(archivo_base64)
-      const byteNumbers = new Array(byteCharacters.length)
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-      }
-      const blob = new Blob([new Uint8Array(byteNumbers)], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = nombre
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-      setTimeout(() => {
-        showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.")
-      }, 500)
-    } catch (error) {
-      console.error("Error al descargar la plantilla:", error)
-      setTemplateDownloaded(false)
-      showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.")
-    }
+const handleDownloadTemplate = async () => {
+  if (templateDownloaded) {
+    showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.");
+    return;
   }
+  setTemplateDownloaded(true);
+
+  try {
+    const response = await fetch(`${API_URL}/descargar-plantilla`);
+    if (!response.ok) throw new Error("No se pudo descargar la plantilla");
+
+    // Intentamos leer como blob directamente
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plantilla.xlsx"; // Nombre del archivo a descargar
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.");
+  } catch (error) {
+    console.error("Error al descargar la plantilla:", error);
+    setTemplateDownloaded(false);
+    showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.");
+  }
+}
 
   const handleDownloadManual = () => {
     if (manualDownloaded) {
@@ -325,6 +316,15 @@ export default function CertiNormal() {
     }
   }
 
+  const handleFileDrop = (event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  const droppedFile = event.dataTransfer.files[0]
+  if (droppedFile) {
+    handleFileSelect({ target: { files: [droppedFile] } }) // reutilizamos la validación existente
+  }
+}
+
 return (
   <div className="cert-container">
     {/* Header Section */}
@@ -381,6 +381,17 @@ return (
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              e.currentTarget.classList.add("drag-over")
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              e.currentTarget.classList.remove("drag-over")
+            }}
+            onDrop={handleFileDrop}
           >
             {isUploaded ? (
               <FaCheckCircle className="upload-icon success upload-icon-large" /> 
@@ -425,7 +436,6 @@ return (
             <progress value={progress} max="100" className="progress-bar" />
             <span className="progress-text">{progress}%</span>
           </div>
-          <div className="spinner" />
         </div>
       )}
     </div>

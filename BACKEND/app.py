@@ -102,6 +102,25 @@ def iniciar_automatizacion():
 
     return jsonify({"mensaje": "Automatización iniciada en segundo plano"}), 200
 
+@app.route('/descargar-plantilla', methods=['GET'])
+def descargar_plantilla():
+    try:
+        # Generar la plantilla (esto crea plantilla.xlsx en la raíz del proyecto)
+        generar_plantilla()
+        archivo = "plantilla.xlsx"
+
+        if not os.path.exists(archivo):
+            return jsonify({"error": "No se pudo generar la plantilla"}), 500
+
+        return send_file(
+            archivo,
+            as_attachment=True,
+            download_name="plantilla.xlsx",  # nombre con el que se descargará
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+        return jsonify({"error": f"Error generando plantilla: {str(e)}"}), 500
 
 @app.route('/descargar-resultados', methods=['GET'])
 def descargar_resultados():
