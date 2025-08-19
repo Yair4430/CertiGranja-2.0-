@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook } from "react-icons/fa"
+import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook, FaFolderPlus, FaUpload, FaDownload} from "react-icons/fa"
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
@@ -23,11 +23,11 @@ const showAlert = (type, title, text) => {
     title: title,
     text: text,
     confirmButtonText: "Aceptar",
-    background: "#f4f7f6",
-    confirmButtonColor: "#28a745",
+    background: "#ffffff",
+    confirmButtonColor: "#16a34a",
     customClass: {
       popup: "rounded-xl shadow-lg",
-      title: "font-bold text-lg text-green-900",
+      title: "font-bold text-lg",
       confirmButton: "px-4 py-2",
     },
   })
@@ -45,7 +45,7 @@ export default function CertiNormal() {
   const [manualDownloaded, setManualDownloaded] = useState(false)
 
   const fileInputRef = useRef(null)
-  const intervalRef = useRef(null) // 🔔 guardar el setInterval
+  const intervalRef = useRef(null)
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -206,7 +206,7 @@ export default function CertiNormal() {
       }
 
       const data = await response.json()
-      console.log("[v0] Progreso recibido:", data) // Debug log
+      console.log("[v0] Progreso recibido:", data)
 
       const { total, actual, finalizado, error } = data
 
@@ -219,7 +219,7 @@ export default function CertiNormal() {
       if (total > 0) {
         const porcentaje = Math.round((actual / total) * 100)
         setProgress(porcentaje)
-        console.log("[v0] Progreso actualizado:", porcentaje + "%") // Debug log
+        console.log("[v0] Progreso actualizado:", porcentaje + "%")
       }
 
       if (finalizado) {
@@ -272,7 +272,7 @@ export default function CertiNormal() {
       })
       if (!automationResponse.ok) throw new Error("Error en la automatización")
 
-      console.log("[v0] Iniciando monitoreo del progreso") // Debug log
+      console.log("[v0] Iniciando monitoreo del progreso")
 
       intervalRef.current = setInterval(async () => {
         const status = await fetchProgress(setProgress, setIsLoading)
@@ -280,18 +280,18 @@ export default function CertiNormal() {
         if (status === "finished") {
           clearInterval(intervalRef.current)
           intervalRef.current = null
-          console.log("[v0] Proceso completado exitosamente") // Debug log
+          console.log("[v0] Proceso completado exitosamente")
 
           Swal.fire({
             icon: "success",
             title: "Proceso finalizado",
             text: "Los resultados ya están disponibles en la carpeta de descargas.",
             confirmButtonText: "Aceptar",
-            background: "#f4f7f6",
-            confirmButtonColor: "#28a745",
+            background: "#ffffff",
+            confirmButtonColor: "#16a34a",
             customClass: {
               popup: "rounded-xl shadow-lg",
-              title: "font-bold text-lg text-green-900",
+              title: "font-bold text-lg",
               confirmButton: "px-4 py-2",
             },
           }).then((result) => {
@@ -302,7 +302,7 @@ export default function CertiNormal() {
         } else if (status === "error") {
           clearInterval(intervalRef.current)
           intervalRef.current = null
-          console.log("[v0] Error en el proceso") // Debug log
+          console.log("[v0] Error en el proceso")
 
           showAlert(
             "error",
@@ -325,66 +325,110 @@ export default function CertiNormal() {
     }
   }
 
-  return (
-    <div className="cert-container">
-      <img src="/Logo.png" alt="Logo CertiGranja" className="cert-logo" />
-      <div className="cert-content">
-        <div className="download-container">
-          <div className="icon-wrapper" onClick={handleDownloadTemplate} title="Descargar Plantilla">
-            <FaFileDownload className="download-icon" />
+return (
+  <div className="cert-container">
+    {/* Header Section */}
+    <div className="cert-header">
+      <h1 className="cert-title">CertiGranja</h1>
+    </div>
+
+    {/* Content Section */}
+    <div className="cert-content">
+      {/* Íconos de descarga */}
+      <div className="resources-icons">
+        <FaFileDownload
+          className="download-icon-inline icon-verde" // Clase para íconos de descarga
+          onClick={handleDownloadTemplate}
+          title="Descargar Plantilla"
+        />
+        <FaBook
+          className="download-icon-inline icon-verde" // Clase para íconos de descarga
+          onClick={handleDownloadManual}
+          title="Descargar Manual"
+        />
+      </div>
+
+      {/* Folder Creation Section */}
+      <div className="action-section">
+        <h2 className="section-title">
+          <FaFolderPlus className="folder-icon" /> {/* Clase para íconos de carpeta */}
+          Configuración de Carpeta
+        </h2>
+        <div className="folder-section">
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Ingresa el nombre de la carpeta"
+              value={nombreCarpeta}
+              onChange={(e) => setNombreCarpeta(e.target.value)}
+              className="input-carpeta"
+              disabled={isLoading}
+            />
           </div>
-          <div className="icon-wrapper" onClick={handleDownloadManual} title="Manual de Usuario">
-            <FaBook className="download-icon" />
+        </div>
+      </div>
+
+      {/* File Upload Section */}
+      <div className="action-section">
+        <h2 className="section-title">
+          <FaUpload className="upload-icon" /> {/* Clase para íconos de carga */}
+          Cargar Archivo Excel
+        </h2>
+        <div className="upload-section">
+          <div
+            className={`file-uploader ${isUploaded ? "uploaded" : ""} ${errorMessage ? "error" : ""}`}
+            onClick={() => !isLoading && fileInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
+          >
+            {isUploaded ? (
+              <FaCheckCircle className="upload-icon success upload-icon-large" /> 
+            ) : errorMessage ? (
+              <FaExclamationTriangle className="upload-icon error upload-icon-large" /> 
+            ) : (
+              <FaCloudUploadAlt className="upload-icon upload-icon-large" /> 
+            )}
+            <div className="upload-text">
+              {errorMessage ? errorMessage : fileName ? `${fileName}` : "Haz clic aquí o arrastra tu archivo Excel"}
+            </div>
+            {!errorMessage && !fileName && (
+              <div className="upload-subtext">Formatos soportados: .xls, .xlsx (máx. 5MB)</div>
+            )}
+            {fileName && !errorMessage && (
+              <div className="status-indicator success">
+                <FaCheckCircle />
+                Archivo cargado correctamente
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="file-input"
+              accept=".xls,.xlsx"
+              disabled={isLoading}
+            />
           </div>
         </div>
-        <div className="carpeta-creator">
-          <input
-            type="text"
-            placeholder="Nombre de la carpeta"
-            value={nombreCarpeta}
-            onChange={(e) => setNombreCarpeta(e.target.value)}
-            className="input-carpeta"
-            disabled={isLoading}
-          />
-        </div>
-        <div
-          className={`file-uploader ${isUploaded ? "uploaded" : ""} ${errorMessage ? "error" : ""}`}
-          onClick={() => !isLoading && fileInputRef.current?.click()}
-        >
-          {isUploaded ? (
-            <FaCheckCircle className="upload-icon success" />
-          ) : errorMessage ? (
-            <FaExclamationTriangle className="upload-icon error" />
-          ) : (
-            <FaCloudUploadAlt className="upload-icon" />
-          )}
-          <p>
-            {errorMessage
-              ? errorMessage
-              : fileName
-                ? `${fileName}, Recibido correctamente!`
-                : "Por aquí puedes subir el Excel :)"}
-          </p>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            className="file-input"
-            accept=".xls,.xlsx"
-            disabled={isLoading}
-          />
-        </div>
-        <button onClick={handleUploadAndExecute} className="cert-button" disabled={isLoading}>
-          {isLoading ? "Procesando..." : "Cargar y Ejecutar"}
-        </button>
-        {isLoading && progress < 100 && (
+      </div>
+
+      {/* Process Button */}
+      <button onClick={handleUploadAndExecute} className="cert-button" disabled={isLoading}>
+        {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
+      </button>
+
+      {/* Progress Section */}
+      {isLoading && (
+        <div className="progress-section">
           <div className="progress-bar-container">
             <progress value={progress} max="100" className="progress-bar" />
-            <span>{progress}%</span>
+            <span className="progress-text">{progress}%</span>
           </div>
-        )}
-        {isLoading && <div className="spinner" />}
-      </div>
+          <div className="spinner" />
+        </div>
+      )}
     </div>
-  )
+  </div>
+)
 }

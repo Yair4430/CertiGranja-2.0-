@@ -1,233 +1,207 @@
-/* Simplificando CSS eliminando directivas problemáticas de Tailwind */
-@import "tailwindcss";
-
-/* Variables CSS personalizadas */
-:root {
-  --background: #ffffff;
-  --foreground: #000000;
-  --primary: #28a745;
-  --primary-hover: #218838;
-  --primary-dark: #1e7e34;
-  --success: #155724;
-  --success-bg: #d4edda;
-  --error: #dc3545;
-  --error-bg: #f8d7da;
-  --border: #e9ecef;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
-
-/* Estilos base */
+/* ===== Global Reset ===== */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: #f4f7f6;
+  background: #f8fafc;
+  color: #1f2937;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  color: var(--foreground);
+  padding: 20px;
 }
 
-/* Estilos principales del contenedor */
+/* ===== Container ===== */
 .cert-container {
-  max-width: 500px;
-  background-color: var(--background);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px var(--shadow);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  width: 100%;
+  padding: 24px;
+}
+
+/* ===== Header ===== */
+.cert-header {
   text-align: center;
+  margin-bottom: 32px;
 }
 
 .cert-logo {
-  display: block;
-  max-width: 100%;
-  width: 300px;
-  height: auto;
-  margin: 0 auto 15px auto;
-  position: relative;
-  transform: none;
-  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+  width: 80px;
+  margin-bottom: 10px;
 }
 
-.cert-content > * {
-  margin-top: 7px;
+.cert-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #16a34a;
 }
 
-.cert-content > *:first-child {
-  margin-top: 0;
+.cert-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
 }
 
-/* Estilos para los iconos de descarga */
-.download-container {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: white;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.icon-wrapper:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
-}
-
-.download-icon {
-  font-size: 24px;
-}
-
-/* Estilos para el creador de carpeta */
-.carpeta-creator {
+/* ===== Sections ===== */
+.cert-content {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.action-section {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
   align-items: center;
-  padding: 0.5rem;
-  max-width: 400px;
-  margin: auto;
-  margin-top: 1rem;
+  gap: 8px;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+/* ===== Downloads ===== */
+.download-container {
+  display: flex;
+  gap: 16px;
+}
+
+.download-icon-inline {
+  font-size: 28px;
+  color: #16a34a;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.download-icon-inline:hover {
+  transform: scale(1.1);
+  color: #15803d;
+}
+
+/* ===== Inputs ===== */
+.input-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .input-carpeta {
-  width: 100%;
-  padding: 0.6rem;
-  border: 2px solid var(--primary);
-  border-radius: 0.5rem;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   font-size: 1rem;
-  margin-bottom: 0.5rem;
-  background-color: var(--background);
-  color: #034d19;
-  transition: border-color 0.3s;
-}
-
-.input-carpeta::placeholder {
-  font-weight: bold;
-  color: #034d19;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 
 .input-carpeta:focus {
-  border-color: #034d19;
-  outline: none;
-  color: #034d19;
+  border-color: #16a34a;
+  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
 }
 
-.input-carpeta:focus::placeholder {
-  color: #2f9950;
-  text-shadow: 0.3px 0.3px 0.5px rgba(5, 58, 22, 0.02);
-}
-
-/* Estilos para el subidor de archivos */
-.file-uploader {
+/* ===== File Upload ===== */
+.upload-section {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  border: 2px dashed var(--primary);
+}
+
+.file-uploader {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 10px 0;
+  background: #ffffff;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .file-uploader:hover {
-  background-color: #e9f5ea;
-  border-color: var(--primary-hover);
-}
-
-.file-uploader.uploaded {
-  border: 2px solid var(--primary-hover);
-  background-color: #e6f9e6;
-}
-
-.file-uploader.error {
-  border: 2px solid var(--error);
-  background-color: var(--error-bg);
+  border-color: #16a34a;
+  background: #f0fdf4;
 }
 
 .upload-icon {
   font-size: 40px;
+  color: #6b7280;
   margin-bottom: 10px;
-  transition: color 0.3s ease;
-  color: var(--primary-hover);
 }
 
 .upload-icon.success {
-  color: var(--primary-hover);
+  color: #16a34a;
 }
 
 .upload-icon.error {
-  color: var(--error);
+  color: #dc2626;
+}
+
+.upload-text {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.upload-subtext {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.status-indicator {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator.error {
+  color: #dc2626;
 }
 
 .file-input {
   display: none;
 }
 
-.file-name {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 8px;
-}
-
-.file-uploader p {
-  font-family: "Arial", sans-serif;
-  font-weight: bold;
-  color: #034d19;
-  text-align: center;
-  margin: 0;
-}
-
-/* Estilos para botones */
+/* ===== Button ===== */
 .cert-button {
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  background: #16a34a;
   color: white;
-  padding: 12px 20px;
   border: none;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.2s, transform 0.2s;
   width: 100%;
-  margin: 10px 0;
-  font-family: "Arial", sans-serif;
-  font-weight: bold;
-  text-align: center;
-  font-size: 18px;
 }
 
-.cert-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
+.cert-button:hover {
+  background: #15803d;
+  transform: scale(1.02);
 }
 
 .cert-button:disabled {
-  background: #ccc;
+  background: #9ca3af;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Estilos para la barra de progreso */
+/* ===== Progress Bar ===== */
+.progress-section {
+  margin-top: 20px;
+}
+
 .progress-bar-container {
-  width: 100%;
-  background-color: var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 15px;
-  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -235,119 +209,88 @@ body {
 
 .progress-bar {
   width: 100%;
-  height: 8px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  transition: width 0.4s ease;
+  height: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  appearance: none;
 }
 
-.progress-bar-container span {
+.progress-bar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.progress-bar::-webkit-progress-value {
+  background: #16a34a;
+  border-radius: 10px;
+}
+
+.progress-text {
+  font-size: 0.9rem;
   font-weight: bold;
-  color: var(--success);
+  color: #16a34a;
 }
 
-/* Estilos para el spinner */
+/* ===== Spinner ===== */
 .spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: var(--primary);
-  width: 30px;
-  height: 30px;
+  margin: 14px auto;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #16a34a;
   border-radius: 50%;
+  width: 32px;
+  height: 32px;
   animation: spin 1s linear infinite;
-  margin: 15px auto;
+}
+
+/* Contenedor de los íconos */
+.resources-icons {
+  display: flex;
+  justify-content: center; /* Centra horizontal */
+  gap: 40px; /* Espacio entre íconos */
+  margin-bottom: 20px; /* Separación con el resto */
+}
+
+/* Estilo de los íconos */
+.download-icon-inline {
+  font-size: 40px; /* Aumentamos el tamaño */
+  color: #16a34a;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.download-icon-inline:hover {
+  transform: scale(1.2); /* Efecto al pasar el mouse */
+  color: #15803d;
+}
+
+/* ===== Estilo para íconos de carpeta y carga ===== */
+.folder-icon, .upload-icon {
+  font-size: 25px; /* Tamaño específico para íconos de carpeta y carga */
+  color: #16a34a;
+}
+
+/* ===== Estilo para íconos de carga (dentro del uploader) ===== */
+.upload-icon-large {
+  font-size: 50px; /* Tamaño específico para íconos de carga dentro del uploader */
+  color: #16a34a;
+  margin-bottom: 10px;
+}
+
+/* ===== Estilo para íconos de descarga ===== */
+.download-icon-inline {
+  font-size: 40px; /* Tamaño específico para íconos de descarga */
+  color: #16a34a;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.download-icon-inline:hover {
+  transform: scale(1.2); /* Efecto al pasar el mouse */
+  color: #15803d;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+  to {
     transform: rotate(360deg);
   }
-}
-
-.progress-bar-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.progress-bar {
-  width: 200px;
-  height: 20px;
-}
-
-.success-text {
-  margin-top: 15px;
-  color: #28a745;
-  font-weight: bold;
-}
-
-.loading-container {
-  margin-top: 15px;
-  text-align: center;
-  color: #555;
-}
-
-.spinner {
-  margin: 0 auto 10px auto;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #28a745;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Barra de progreso */
-.progress-container {
-  width: 100%;
-  height: 8px;
-  background-color: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 16px 0;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-  border-radius: 4px;
-  transition: width 0.3s ease-in-out;
-  position: relative;
-}
-
-.progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Texto del progreso */
-.progress-text {
-  text-align: center;
-  font-size: 14px;
-  color: #6b7280;
-  margin-top: 8px;
 }
