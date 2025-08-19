@@ -6,10 +6,14 @@ import os
 from waitress import serve
 import logging
 from pathlib import Path
+import threading
+
+# --- NUEVO ---
+progreso = {"total": 0, "actual": 0, "finalizado": False}
 
 # Modulos de la Version 1 
 from V1.leerEXCEL import leer_excel
-from V1.navegacion import automatizar_navegacion
+from V1.navegacion import automatizar_navegacion, set_progreso_callback
 from V1.Plantilla import generar_plantilla
 from V1.generarResultados import generar_resultados
 
@@ -23,6 +27,11 @@ CORS(app)  # Habilitar CORS para permitir peticiones desde React
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Crear carpeta si no existe
+
+
+@app.route('/progreso', methods=['GET'])
+def obtener_progreso():
+    return jsonify(progreso)
 
 @app.route('/crear-carpeta-descargas', methods=['POST'])
 def crear_carpeta_en_descargas():
@@ -62,38 +71,37 @@ def subir_excel():
 
 @app.route('/iniciar-automatizacion', methods=['POST'])
 def iniciar_automatizacion():
-    global ruta_carpeta_descargas
+    global ruta_carpeta_descargas, progreso
 
     filepath = os.path.join(UPLOAD_FOLDER, "archivo_subido.xlsx")
 
     if not os.path.exists(filepath):
         return jsonify({"error": "No hay archivo subido"}), 400
 
-    datos = leer_excel(filepath)  
+    datos = leer_excel(filepath)
     if datos is None:
         return jsonify({"error": "No hay datos para procesar"}), 400
 
-    # Aquí deberías obtener el DataFrame de resultados
-    resultados = automatizar_navegacion(datos, carpeta_destino=ruta_carpeta_descargas)
+    def actualizar_progreso(data):
+        global progreso
+        progreso.update(data)
 
-    # Y ahora llamas a la función pasando la ruta
-    generar_resultados(datos, resultados, nombre_archivo_salida="resultados_certificados.xlsx", carpeta_destino=ruta_carpeta_descargas)
+    set_progreso_callback(actualizar_progreso)
 
-    return jsonify({"mensaje": "Automatización finalizada y resultados guardados"}), 200
+    # 🚀 Lanzar la automatización en un hilo aparte
+    def run_automatizacion():
+        resultados = automatizar_navegacion(datos, carpeta_destino=ruta_carpeta_descargas)
+        generar_resultados(
+            datos, resultados,
+            nombre_archivo_salida="resultados_certificados.xlsx",
+            carpeta_destino=ruta_carpeta_descargas
+        )
+        progreso.update({"finalizado": True})
 
-@app.route('/descargar-plantilla', methods=['GET'])
-def descargar_plantilla():
-    try:
-        generar_plantilla()  # Generar la plantilla antes de enviarla
+    threading.Thread(target=run_automatizacion, daemon=True).start()
 
-        # Leer el archivo y convertirlo a base64
-        with open("plantilla.xlsx", "rb") as file:
-            base64_data = base64.b64encode(file.read()).decode('utf-8')
+    return jsonify({"mensaje": "Automatización iniciada en segundo plano"}), 200
 
-        return jsonify({"archivo_base64": base64_data, "nombre": "plantilla.xlsx"})
-    
-    except Exception as e:
-        return jsonify({"error": f"Error al descargar: {str(e)}"}), 500
 
 @app.route('/descargar-resultados', methods=['GET'])
 def descargar_resultados():

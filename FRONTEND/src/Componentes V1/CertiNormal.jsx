@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect, useRef } from "react"
 import { FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook } from "react-icons/fa"
 import * as XLSX from "xlsx"
@@ -15,10 +17,9 @@ const getApiUrl = () => {
 
 const API_URL = getApiUrl()
 
-// 🔔 Nueva función de alerta con SweetAlert2
 const showAlert = (type, title, text) => {
   Swal.fire({
-    icon: type, // success | error | warning | info | question
+    icon: type,
     title: title,
     text: text,
     confirmButtonText: "Aceptar",
@@ -44,6 +45,7 @@ export default function CertiNormal() {
   const [manualDownloaded, setManualDownloaded] = useState(false)
 
   const fileInputRef = useRef(null)
+  const intervalRef = useRef(null) // 🔔 guardar el setInterval
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -54,7 +56,13 @@ export default function CertiNormal() {
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
   }, [isLoading])
 
   const handleDownloadTemplate = async () => {
@@ -69,8 +77,11 @@ export default function CertiNormal() {
       const data = await response.json()
       const { archivo_base64, nombre } = data
       const byteCharacters = atob(archivo_base64)
-      const byteNumbers = new Uint8Array(byteCharacters.length).map((_, i) => byteCharacters.charCodeAt(i))
-      const blob = new Blob([byteNumbers], {
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+      const blob = new Blob([new Uint8Array(byteNumbers)], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       })
       const url = URL.createObjectURL(blob)
@@ -186,72 +197,133 @@ export default function CertiNormal() {
     }
   }
 
-const handleUploadAndExecute = async () => {
-  if (!file) {
-    showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
-    return
-  }
-
-  const carpetaCreada = await handleCrearCarpeta()
-  if (!carpetaCreada) return
-
-  setIsLoading(true)
-  setProgress(0)
-
-  try {
-    const formData = new FormData()
-    formData.append("file", file)
-
-    const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
-      method: "POST",
-      body: formData,
-    })
-    if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
-
-    for (let i = 0; i <= 50; i += 10) {
-      setProgress(i)
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-
-    const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
-      method: "POST",
-    })
-    if (!automationResponse.ok) throw new Error("Error en la automatización")
-
-    for (let i = 50; i <= 100; i += 10) {
-      setProgress(i)
-      await new Promise((resolve) => setTimeout(resolve, 200))
-    }
-
-    setIsLoading(false)
-    setProgress(0)
-
-    // 🔔 Aquí esperamos la confirmación del usuario
-    Swal.fire({
-      icon: "success",
-      title: "Proceso finalizado",
-      text: "El estado de los PDFs se encuentra en el archivo Excel dentro de la carpeta de descargas. Los PDFs se han generado correctamente.",
-      confirmButtonText: "Aceptar",
-      background: "#f4f7f6",
-      confirmButtonColor: "#28a745",
-      customClass: {
-        popup: "rounded-xl shadow-lg",
-        title: "font-bold text-lg text-green-900",
-        confirmButton: "px-4 py-2",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.reload()
+  const fetchProgress = async (setProgress, setIsLoading) => {
+    try {
+      const response = await fetch(`${API_URL}/progreso`)
+      if (!response.ok) {
+        console.error("Error en respuesta del progreso:", response.status)
+        return "error"
       }
-    })
 
-  } catch (error) {
-    console.error("Error al procesar:", error)
-    showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
+      const data = await response.json()
+      console.log("[v0] Progreso recibido:", data) // Debug log
+
+      const { total, actual, finalizado, error } = data
+
+      if (error) {
+        console.error("Error del backend:", error)
+        setIsLoading(false)
+        return "error"
+      }
+
+      if (total > 0) {
+        const porcentaje = Math.round((actual / total) * 100)
+        setProgress(porcentaje)
+        console.log("[v0] Progreso actualizado:", porcentaje + "%") // Debug log
+      }
+
+      if (finalizado) {
+        setIsLoading(false)
+        return "finished"
+      }
+
+      return "running"
+    } catch (error) {
+      console.error("Error obteniendo progreso:", error)
+      return "error"
+    }
+  }
+
+  const resetForm = () => {
+    setFile(null)
+    setFileName("")
+    setIsUploaded(false)
+    setErrorMessage("")
     setProgress(0)
     setIsLoading(false)
+    setNombreCarpeta("")
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
-}
+
+  const handleUploadAndExecute = async () => {
+    if (!file) {
+      showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
+      return
+    }
+
+    const carpetaCreada = await handleCrearCarpeta()
+    if (!carpetaCreada) return
+
+    setIsLoading(true)
+    setProgress(0)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
+        method: "POST",
+        body: formData,
+      })
+      if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
+
+      const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
+        method: "POST",
+      })
+      if (!automationResponse.ok) throw new Error("Error en la automatización")
+
+      console.log("[v0] Iniciando monitoreo del progreso") // Debug log
+
+      intervalRef.current = setInterval(async () => {
+        const status = await fetchProgress(setProgress, setIsLoading)
+
+        if (status === "finished") {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+          console.log("[v0] Proceso completado exitosamente") // Debug log
+
+          Swal.fire({
+            icon: "success",
+            title: "Proceso finalizado",
+            text: "Los resultados ya están disponibles en la carpeta de descargas.",
+            confirmButtonText: "Aceptar",
+            background: "#f4f7f6",
+            confirmButtonColor: "#28a745",
+            customClass: {
+              popup: "rounded-xl shadow-lg",
+              title: "font-bold text-lg text-green-900",
+              confirmButton: "px-4 py-2",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              resetForm()
+            }
+          })
+        } else if (status === "error") {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+          console.log("[v0] Error en el proceso") // Debug log
+
+          showAlert(
+            "error",
+            "Error en el proceso",
+            "Hubo un problema durante la automatización. Por favor, inténtalo nuevamente.",
+          )
+          setProgress(0)
+          setIsLoading(false)
+        }
+      }, 1500)
+    } catch (error) {
+      console.error("Error al procesar:", error)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+      showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
+      setProgress(0)
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="cert-container">
@@ -290,8 +362,8 @@ const handleUploadAndExecute = async () => {
             {errorMessage
               ? errorMessage
               : fileName
-              ? `${fileName}, Recibido correctamente!`
-              : "Por aquí puedes subir el Excel :)"}
+                ? `${fileName}, Recibido correctamente!`
+                : "Por aquí puedes subir el Excel :)"}
           </p>
           <input
             type="file"
