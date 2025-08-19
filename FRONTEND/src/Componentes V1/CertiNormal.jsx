@@ -186,50 +186,72 @@ export default function CertiNormal() {
     }
   }
 
-  const handleUploadAndExecute = async () => {
-    if (!file) {
-      showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
-      return
-    }
-    const carpetaCreada = await handleCrearCarpeta()
-    if (!carpetaCreada) return
-    setIsLoading(true)
-    setProgress(0)
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-      const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
-        method: "POST",
-        body: formData,
-      })
-      if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
-      for (let i = 0; i <= 50; i += 10) {
-        setProgress(i)
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      }
-      const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
-        method: "POST",
-      })
-      if (!automationResponse.ok) throw new Error("Error en la automatización")
-      for (let i = 50; i <= 100; i += 10) {
-        setProgress(i)
-        await new Promise((resolve) => setTimeout(resolve, 200))
-      }
-      setIsLoading(false)
-      setProgress(0)
-      showAlert(
-        "success",
-        "Proceso finalizado",
-        "El estado de los PDFs se encuentra en el archivo Excel dentro de la carpeta de descargas. Los PDFs se han generado correctamente.",
-      )
-      setTimeout(() => window.location.reload(), 100)
-    } catch (error) {
-      console.error("Error al procesar:", error)
-      showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
-      setProgress(0)
-      setIsLoading(false)
-    }
+const handleUploadAndExecute = async () => {
+  if (!file) {
+    showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
+    return
   }
+
+  const carpetaCreada = await handleCrearCarpeta()
+  if (!carpetaCreada) return
+
+  setIsLoading(true)
+  setProgress(0)
+
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
+      method: "POST",
+      body: formData,
+    })
+    if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
+
+    for (let i = 0; i <= 50; i += 10) {
+      setProgress(i)
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
+      method: "POST",
+    })
+    if (!automationResponse.ok) throw new Error("Error en la automatización")
+
+    for (let i = 50; i <= 100; i += 10) {
+      setProgress(i)
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    }
+
+    setIsLoading(false)
+    setProgress(0)
+
+    // 🔔 Aquí esperamos la confirmación del usuario
+    Swal.fire({
+      icon: "success",
+      title: "Proceso finalizado",
+      text: "El estado de los PDFs se encuentra en el archivo Excel dentro de la carpeta de descargas. Los PDFs se han generado correctamente.",
+      confirmButtonText: "Aceptar",
+      background: "#f4f7f6",
+      confirmButtonColor: "#28a745",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg text-green-900",
+        confirmButton: "px-4 py-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload()
+      }
+    })
+
+  } catch (error) {
+    console.error("Error al procesar:", error)
+    showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
+    setProgress(0)
+    setIsLoading(false)
+  }
+}
 
   return (
     <div className="cert-container">
