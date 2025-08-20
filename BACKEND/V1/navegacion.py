@@ -1,4 +1,3 @@
-# navegacion.py
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -29,7 +28,6 @@ def set_progreso_callback(callback):
     global progreso_callback
     progreso_callback = callback
 
-
 def obtener_enlace_tipo_documento(tipo_documento):
     """
     Retorna el enlace correspondiente según el tipo de documento
@@ -40,7 +38,6 @@ def obtener_enlace_tipo_documento(tipo_documento):
         "PPT": "https://apps.migracioncolombia.gov.co:8443/consultappt/"
     }
     return enlaces.get(tipo_documento, "")
-
 
 def automatizar_navegacion(datos, carpeta_destino=None):
     global progreso_callback
@@ -255,8 +252,16 @@ def automatizar_navegacion(datos, carpeta_destino=None):
             time.sleep(1)
             driver.quit()
         
-        nombre_archivo = os.getenv("OUTPUT_FILE", "resultados_certificados.xlsx")
+        # --- Guardar resultados ---
         resultados_df = pd.DataFrame(resultados)
+
+        if carpeta_destino:
+            # Guardar resultados en la subcarpeta
+            nombre_archivo = os.path.join(carpeta_destino, "resultados_certificados.xlsx")
+        else:
+            # Guardar resultados en la ruta por defecto
+            nombre_archivo = os.getenv("OUTPUT_FILE", "resultados_certificados.xlsx")
+
         generar_resultados(datos, resultados_df, nombre_archivo)
         
         if carpeta_destino:
@@ -267,7 +272,6 @@ def automatizar_navegacion(datos, carpeta_destino=None):
         progreso_callback({"total": total_filas, "actual": total_filas, "finalizado": True})
 
     return resultados
-
 
 if __name__ == "__main__":
     archivo_usuario = input("Ingrese el nombre del archivo Excel con los datos: ")
