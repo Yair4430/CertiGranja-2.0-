@@ -27,10 +27,16 @@ def generar_resultados(datos, resultados_df, nombre_archivo_salida="resultados_c
 
     # Agregar columna de observaciones directamente al DataFrame completo
     print("Agregando columna de observaciones...")
+    
     # Asegurarse de que los resultados se asocien correctamente con las filas
     if len(resultados_df) == len(datos):
+        # Asegurar que la columna "NOMBRES Y APELLIDOS" siempre esté en datos
+        if "NOMBRES Y APELLIDOS" not in datos.columns and "NOMBRES Y APELLIDOS" in resultados_df.columns:
+            datos["NOMBRES Y APELLIDOS"] = resultados_df["NOMBRES Y APELLIDOS"]
+
         datos["OBSERVACIONES"] = resultados_df["OBSERVACIONES"]
         datos["STATUS"] = resultados_df["STATUS"]
+
     else:
         print(f"ADVERTENCIA: El número de resultados ({len(resultados_df)}) no coincide con el número de filas de datos ({len(datos)})")
         # Asignar solo las observaciones disponibles
