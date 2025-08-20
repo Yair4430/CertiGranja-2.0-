@@ -8,7 +8,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from V1.leerEXCEL import leer_excel
-from V1.generarResultados import generar_resultados
 from V1.unir_certificados import unir_pdfs
 from V1.navegacion import automatizar_navegacion
 
@@ -76,7 +75,6 @@ def main():
         procesar_carpeta(carpeta, i, total)
 
     print("\n🎉 Proceso masivo finalizado con éxito.")
-
 
 if __name__ == "__main__":
     main()

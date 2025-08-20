@@ -57,10 +57,11 @@ def automatizar_navegacion(datos, carpeta_destino=None):
         if not url:
             raise ValueError("Faltan variables de entorno en el archivo .env")
         
-        # Configurar el driver usando webdriver-manager
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service)
-                  
+
+        # Abrir navegador en pantalla completa
+        driver.maximize_window()
         driver.get(url)
         
         while fila_actual < total_filas:
