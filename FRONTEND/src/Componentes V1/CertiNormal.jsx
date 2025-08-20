@@ -1,9 +1,19 @@
+"use client"
+
 import { useState, useEffect, useRef } from "react"
-import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook, FaFolderPlus, FaUpload, FaDownload} from "react-icons/fa"
+import {
+  FaCloudUploadAlt,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaFileDownload,
+  FaBook,
+  FaFolderPlus,
+  FaUpload,
+} from "react-icons/fa"
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
-import "./global.css"
+import styles from "./CertiNormal.module.css"
 
 const getApiUrl = () => {
   try {
@@ -63,35 +73,35 @@ export default function CertiNormal() {
     }
   }, [isLoading])
 
-const handleDownloadTemplate = async () => {
-  if (templateDownloaded) {
-    showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.");
-    return;
+  const handleDownloadTemplate = async () => {
+    if (templateDownloaded) {
+      showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.")
+      return
+    }
+    setTemplateDownloaded(true)
+
+    try {
+      const response = await fetch(`${API_URL}/descargar-plantilla`)
+      if (!response.ok) throw new Error("No se pudo descargar la plantilla")
+
+      // Intentamos leer como blob directamente
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "plantilla.xlsx" // Nombre del archivo a descargar
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.")
+    } catch (error) {
+      console.error("Error al descargar la plantilla:", error)
+      setTemplateDownloaded(false)
+      showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.")
+    }
   }
-  setTemplateDownloaded(true);
-
-  try {
-    const response = await fetch(`${API_URL}/descargar-plantilla`);
-    if (!response.ok) throw new Error("No se pudo descargar la plantilla");
-
-    // Intentamos leer como blob directamente
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "plantilla.xlsx"; // Nombre del archivo a descargar
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.");
-  } catch (error) {
-    console.error("Error al descargar la plantilla:", error);
-    setTemplateDownloaded(false);
-    showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.");
-  }
-}
 
   const handleDownloadManual = () => {
     if (manualDownloaded) {
@@ -317,128 +327,124 @@ const handleDownloadTemplate = async () => {
   }
 
   const handleFileDrop = (event) => {
-  event.preventDefault()
-  event.stopPropagation()
-  const droppedFile = event.dataTransfer.files[0]
-  if (droppedFile) {
-    handleFileSelect({ target: { files: [droppedFile] } }) // reutilizamos la validación existente
+    event.preventDefault()
+    event.stopPropagation()
+    const droppedFile = event.dataTransfer.files[0]
+    if (droppedFile) {
+      handleFileSelect({ target: { files: [droppedFile] } }) // reutilizamos la validación existente
+    }
   }
-}
 
-return (
-  <div className="cert-container">
-    {/* Header Section */}
-    <div className="cert-header">
-      <h1 className="cert-title">CertiGranja</h1>
-    </div>
-
-    {/* Content Section */}
-    <div className="cert-content">
-      {/* Íconos de descarga */}
-      <div className="resources-icons">
-        <FaFileDownload
-          className="download-icon-inline icon-verde" // Clase para íconos de descarga
-          onClick={handleDownloadTemplate}
-          title="Descargar Plantilla"
-        />
-        <FaBook
-          className="download-icon-inline icon-verde" // Clase para íconos de descarga
-          onClick={handleDownloadManual}
-          title="Descargar Manual"
-        />
+  return (
+    <div className={styles.certContainer}>
+      {/* Header Section */}
+      <div className={styles.certHeader}>
+        <h1 className={styles.certTitle}>CertiGranja</h1>
       </div>
 
-      {/* Folder Creation Section */}
-      <div className="action-section">
-        <h2 className="section-title">
-          <FaFolderPlus className="folder-icon" /> {/* Clase para íconos de carpeta */}
-          Configuración de Carpeta
-        </h2>
-        <div className="folder-section">
-          <div className="input-group">
-            <input
-              type="text"
-              placeholder="Ingresa el nombre de la carpeta"
-              value={nombreCarpeta}
-              onChange={(e) => setNombreCarpeta(e.target.value)}
-              className="input-carpeta"
-              disabled={isLoading}
-            />
-          </div>
+      {/* Content Section */}
+      <div className={styles.certContent}>
+        {/* Íconos de descarga */}
+        <div className={styles.resourcesIcons}>
+          <FaFileDownload
+            className={styles.downloadIconInline}
+            onClick={handleDownloadTemplate}
+            title="Descargar Plantilla"
+          />
+          <FaBook className={styles.downloadIconInline} onClick={handleDownloadManual} title="Descargar Manual" />
         </div>
-      </div>
 
-      {/* File Upload Section */}
-      <div className="action-section">
-        <h2 className="section-title">
-          <FaUpload className="upload-icon" /> {/* Clase para íconos de carga */}
-          Cargar Archivo Excel
-        </h2>
-        <div className="upload-section">
-          <div
-            className={`file-uploader ${isUploaded ? "uploaded" : ""} ${errorMessage ? "error" : ""}`}
-            onClick={() => !isLoading && fileInputRef.current?.click()}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
-            onDragOver={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              e.currentTarget.classList.add("drag-over")
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              e.currentTarget.classList.remove("drag-over")
-            }}
-            onDrop={handleFileDrop}
-          >
-            {isUploaded ? (
-              <FaCheckCircle className="upload-icon success upload-icon-large" /> 
-            ) : errorMessage ? (
-              <FaExclamationTriangle className="upload-icon error upload-icon-large" /> 
-            ) : (
-              <FaCloudUploadAlt className="upload-icon upload-icon-large" /> 
-            )}
-            <div className="upload-text">
-              {errorMessage ? errorMessage : fileName ? `${fileName}` : "Haz clic aquí o arrastra tu archivo Excel"}
+        {/* Folder Creation Section */}
+        <div className={styles.actionSection}>
+          <h2 className={styles.sectionTitle}>
+            <FaFolderPlus className={styles.folderIcon} />
+            Configuración de Carpeta
+          </h2>
+          <div className={styles.folderSection}>
+            <div className={styles.inputGroup}>
+              <input
+                type="text"
+                placeholder="Ingresa el nombre de la carpeta"
+                value={nombreCarpeta}
+                onChange={(e) => setNombreCarpeta(e.target.value)}
+                className={styles.inputCarpeta}
+                disabled={isLoading}
+              />
             </div>
-            {!errorMessage && !fileName && (
-              <div className="upload-subtext">Formatos soportados: .xls, .xlsx (máx. 5MB)</div>
-            )}
-            {fileName && !errorMessage && (
-              <div className="status-indicator success">
-                <FaCheckCircle />
-                Archivo cargado correctamente
+          </div>
+        </div>
+
+        {/* File Upload Section */}
+        <div className={styles.actionSection}>
+          <h2 className={styles.sectionTitle}>
+            <FaUpload className={styles.uploadIcon} />
+            Cargar Archivo Excel
+          </h2>
+          <div className={styles.uploadSection}>
+            <div
+              className={`${styles.fileUploader} ${isUploaded ? styles.uploaded : ""} ${errorMessage ? styles.error : ""}`}
+              onClick={() => !isLoading && fileInputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                e.currentTarget.classList.add(styles.dragOver)
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                e.currentTarget.classList.remove(styles.dragOver)
+              }}
+              onDrop={handleFileDrop}
+            >
+              {isUploaded ? (
+                <FaCheckCircle className={`${styles.uploadIcon} ${styles.success} ${styles.uploadIconLarge}`} />
+              ) : errorMessage ? (
+                <FaExclamationTriangle className={`${styles.uploadIcon} ${styles.error} ${styles.uploadIconLarge}`} />
+              ) : (
+                <FaCloudUploadAlt className={`${styles.uploadIcon} ${styles.uploadIconLarge}`} />
+              )}
+              <div className={styles.uploadText}>
+                {errorMessage ? errorMessage : fileName ? `${fileName}` : "Haz clic aquí o arrastra tu archivo Excel"}
               </div>
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              className="file-input"
-              accept=".xls,.xlsx"
-              disabled={isLoading}
-            />
+              {!errorMessage && !fileName && (
+                <div className={styles.uploadSubtext}>Formatos soportados: .xls, .xlsx (máx. 5MB)</div>
+              )}
+              {fileName && !errorMessage && (
+                <div className={`${styles.statusIndicator} ${styles.success}`}>
+                  <FaCheckCircle />
+                  Archivo cargado correctamente
+                </div>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                className={styles.fileInput}
+                accept=".xls,.xlsx"
+                disabled={isLoading}
+              />
+            </div>
           </div>
         </div>
+
+        {/* Process Button */}
+        <button onClick={handleUploadAndExecute} className={styles.certButton} disabled={isLoading}>
+          {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
+        </button>
+
+        {/* Progress Section */}
+        {isLoading && (
+          <div className={styles.progressSection}>
+            <div className={styles.progressBarContainer}>
+              <progress value={progress} max="100" className={styles.progressBar} />
+              <span className={styles.progressText}>{progress}%</span>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Process Button */}
-      <button onClick={handleUploadAndExecute} className="cert-button" disabled={isLoading}>
-        {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
-      </button>
-
-      {/* Progress Section */}
-      {isLoading && (
-        <div className="progress-section">
-          <div className="progress-bar-container">
-            <progress value={progress} max="100" className="progress-bar" />
-            <span className="progress-text">{progress}%</span>
-          </div>
-        </div>
-      )}
     </div>
-  </div>
-)
+  )
 }

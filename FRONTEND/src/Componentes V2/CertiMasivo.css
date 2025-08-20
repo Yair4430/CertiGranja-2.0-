@@ -12,7 +12,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;   /* ocupa al menos toda la pantalla */
+  min-height: 100vh;
   padding: 20px;
 }
 
@@ -40,7 +40,7 @@ body {
 .cert-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #16a34a;
+  color: #0ea5e9; /* Azul cielo */
 }
 
 .cert-subtitle {
@@ -80,14 +80,14 @@ body {
 
 .download-icon-inline {
   font-size: 28px;
-  color: #16a34a;
+  color: #0ea5e9; /* Azul cielo */
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
 }
 
 .download-icon-inline:hover {
   transform: scale(1.1);
-  color: #15803d;
+  color: #0284c7; /* Azul más oscuro */
 }
 
 /* ===== Inputs ===== */
@@ -106,8 +106,8 @@ body {
 }
 
 .input-carpeta:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 4px rgba(14, 165, 233, 0.4);
 }
 
 /* ===== File Upload ===== */
@@ -117,7 +117,7 @@ body {
 }
 
 .file-uploader {
-  border: 2px dashed #d1d5db;
+  border: 2px dashed #0ea5e9;
   border-radius: 12px;
   padding: 24px;
   text-align: center;
@@ -128,8 +128,8 @@ body {
 }
 
 .file-uploader:hover {
-  border-color: #16a34a;
-  background: #f0fdf4;
+  border-color: #0284c7;
+  background: #e0f2fe;
 }
 
 .upload-icon {
@@ -139,7 +139,7 @@ body {
 }
 
 .upload-icon.success {
-  color: #16a34a;
+  color: #0ea5e9;
 }
 
 .upload-icon.error {
@@ -159,7 +159,7 @@ body {
 .status-indicator {
   margin-top: 10px;
   font-size: 0.9rem;
-  color: #16a34a;
+  color: #0ea5e9;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -175,7 +175,7 @@ body {
 
 /* ===== Button ===== */
 .cert-button {
-  background: #16a34a;
+  background: #0ea5e9;
   color: white;
   border: none;
   padding: 12px;
@@ -188,7 +188,7 @@ body {
 }
 
 .cert-button:hover {
-  background: #15803d;
+  background: #0284c7;
   transform: scale(1.02);
 }
 
@@ -223,21 +223,21 @@ body {
 }
 
 .progress-bar::-webkit-progress-value {
-  background: #16a34a;
+  background: #0ea5e9;
   border-radius: 10px;
 }
 
 .progress-text {
   font-size: 0.9rem;
   font-weight: bold;
-  color: #16a34a;
+  color: #0ea5e9;
 }
 
 /* ===== Spinner ===== */
 .spinner {
   margin: 14px auto;
   border: 4px solid #e5e7eb;
-  border-top: 4px solid #16a34a;
+  border-top: 4px solid #0ea5e9;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -247,64 +247,42 @@ body {
 /* Contenedor de los íconos */
 .resources-icons {
   display: flex;
-  justify-content: center; /* Centra horizontal */
-  gap: 40px; /* Espacio entre íconos */
-  margin-bottom: 20px; /* Separación con el resto */
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
 }
 
-/* Estilo de los íconos */
+/* Íconos */
 .download-icon-inline {
-  font-size: 40px; /* Aumentamos el tamaño */
-  color: #16a34a;
+  font-size: 40px;
+  color: #0ea5e9;
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
 }
 
 .download-icon-inline:hover {
-  transform: scale(1.2); /* Efecto al pasar el mouse */
-  color: #15803d;
+  transform: scale(1.2);
+  color: #0284c7;
 }
 
-/* ===== Estilo para íconos de carpeta y carga ===== */
+/* Íconos de carpeta y carga */
 .folder-icon, .upload-icon {
-  font-size: 25px; /* Tamaño específico para íconos de carpeta y carga */
-  color: #16a34a;
+  font-size: 25px;
+  color: #0ea5e9;
 }
 
-/* ===== Estilo para íconos de carga (dentro del uploader) ===== */
+/* Ícono grande dentro del uploader */
 .upload-icon-large {
-  font-size: 50px; /* Tamaño específico para íconos de carga dentro del uploader */
-  color: #16a34a;
+  font-size: 50px;
+  color: #0ea5e9;
   margin-bottom: 10px;
 }
 
-/* ===== Estilo para íconos de descarga ===== */
-.download-icon-inline {
-  font-size: 40px; /* Tamaño específico para íconos de descarga */
-  color: #16a34a;
-  cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.download-icon-inline:hover {
-  transform: scale(1.2); /* Efecto al pasar el mouse */
-  color: #15803d;
-}
-
-.file-uploader {
-  border: 2px dashed #16a34a;
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
 .file-uploader.drag-over {
-  border-color: #15803d;
-  background-color: #f0fdf4;
+  border-color: #0284c7;
+  background-color: #e0f2fe;
   transform: scale(1.02);
 }
-
 
 @keyframes spin {
   to {

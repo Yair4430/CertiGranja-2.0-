@@ -11,15 +11,14 @@ from V1.leerEXCEL import leer_excel
 from V1.unir_certificados import unir_pdfs
 from V1.navegacion import automatizar_navegacion
 
+
 def procesar_carpeta(carpeta_path, indice, total):
     """
-    Procesa una carpeta: busca Excel, corre la automatización y une PDFs
+    Procesa una carpeta: busca Excel, corre la automatización y une PDFs.
     """
     print(f"\n[{indice}/{total}] Procesando carpeta: {carpeta_path}")
 
-    # Buscar archivo Excel en la carpeta
     archivos_excel = [f for f in os.listdir(carpeta_path) if f.endswith((".xlsx", ".xls"))]
-
     if not archivos_excel:
         print(f"⚠ No se encontró Excel en {carpeta_path}, se omite.")
         return
@@ -27,26 +26,22 @@ def procesar_carpeta(carpeta_path, indice, total):
     archivo_excel = os.path.join(carpeta_path, archivos_excel[0])
     print(f"📄 Usando archivo: {archivo_excel}")
 
-    # Leer Excel
     datos = leer_excel(archivo_excel)
     if datos is None:
         print(f"⚠ Error leyendo Excel en {carpeta_path}")
         return
 
-    # Ejecutar automatización
     try:
         automatizar_navegacion(datos, carpeta_destino=carpeta_path)
     except Exception as e:
         print(f"❌ Error procesando carpeta {carpeta_path}: {e}")
         return
 
-    # Unir PDFs
     try:
         unir_pdfs(carpeta_path)
     except Exception as e:
         print(f"⚠ No se pudieron unir PDFs en {carpeta_path}: {e}")
 
-    # Renombrar carpeta agregando "_"
     carpeta_final = carpeta_path + "_"
     try:
         os.rename(carpeta_path, carpeta_final)
@@ -55,18 +50,21 @@ def procesar_carpeta(carpeta_path, indice, total):
         print(f"⚠ No se pudo renombrar carpeta {carpeta_path}: {e}")
 
 
-def main():
-    ruta_principal = input("Ingrese la ruta de la carpeta principal con subcarpetas: ").strip()
-
+def procesar_carpeta_principal(ruta_principal):
+    """
+    Procesa todas las subcarpetas dentro de una carpeta principal.
+    """
     if not os.path.isdir(ruta_principal):
-        print("❌ La ruta no es válida.")
-        return
+        raise ValueError("❌ La ruta no es válida.")
 
-    subcarpetas = [os.path.join(ruta_principal, d) for d in os.listdir(ruta_principal) if os.path.isdir(os.path.join(ruta_principal, d))]
+    subcarpetas = [
+        os.path.join(ruta_principal, d)
+        for d in os.listdir(ruta_principal)
+        if os.path.isdir(os.path.join(ruta_principal, d))
+    ]
 
     if not subcarpetas:
-        print("❌ No se encontraron subcarpetas en la ruta ingresada.")
-        return
+        raise ValueError("❌ No se encontraron subcarpetas en la ruta ingresada.")
 
     total = len(subcarpetas)
     print(f"\nSe encontraron {total} subcarpetas para procesar.")
@@ -75,6 +73,3 @@ def main():
         procesar_carpeta(carpeta, i, total)
 
     print("\n🎉 Proceso masivo finalizado con éxito.")
-
-if __name__ == "__main__":
-    main()

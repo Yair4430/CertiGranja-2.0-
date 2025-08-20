@@ -17,6 +17,9 @@ from V1.navegacion import automatizar_navegacion, set_progreso_callback
 from V1.Plantilla import generar_plantilla
 from V1.generarResultados import generar_resultados
 
+# Modulos de la version 2
+from V2.navegacion_masivo import procesar_carpeta_principal
+
 logging.basicConfig(level=logging.DEBUG)
 
 # Agrega esta variable al inicio de tu archivo app.py
@@ -134,6 +137,41 @@ def descargar_resultados():
         return jsonify({"error": "El archivo no está disponible."}), 404
 
     return send_file(archivo_resultados, as_attachment=True)
+
+@app.route('/iniciar-automatizacion-masiva', methods=['POST'])
+def iniciar_automatizacion_masiva():
+    global progreso
+    data = request.get_json()
+    ruta_principal = data.get("ruta")
+
+    if not ruta_principal or not os.path.isdir(ruta_principal):
+        return jsonify({"error": "Ruta inválida"}), 400
+
+    subcarpetas = [
+        os.path.join(ruta_principal, d)
+        for d in os.listdir(ruta_principal)
+        if os.path.isdir(os.path.join(ruta_principal, d))
+    ]
+
+    if not subcarpetas:
+        return jsonify({"error": "No se encontraron subcarpetas"}), 400
+
+    total = len(subcarpetas)
+    progreso.update({"total": total, "actual": 0, "finalizado": False})
+
+    def run_masivo():
+        for i, carpeta in enumerate(subcarpetas, start=1):
+            try:
+                procesar_carpeta_principal(ruta_principal)
+                progreso.update({"actual": i})
+            except Exception as e:
+                print(f"❌ Error en {carpeta}: {e}")
+
+        progreso.update({"finalizado": True})
+
+    threading.Thread(target=run_masivo, daemon=True).start()
+
+    return jsonify({"mensaje": f"Automatización masiva iniciada con {total} carpetas"}), 200
 
 if __name__ == '__main__':
     logging.info("Servidor iniciado en http://127.0.0.1:50400")
