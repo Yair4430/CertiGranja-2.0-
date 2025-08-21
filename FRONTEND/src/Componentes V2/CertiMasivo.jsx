@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook, FaUpload } from "react-icons/fa"
+import { FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaBook, FaUpload, FaFolderPlus } from "react-icons/fa"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
 import "./CertiMasivo.css"
@@ -30,16 +30,13 @@ const showAlert = (type, title, text) => {
   })
 }
 
-export default function CertiNormal() {
-  const [files, setFiles] = useState([])
-  const [isUploaded, setIsUploaded] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
+export default function CertiMasivo() {
+  const [ruta, setRuta] = useState("")
   const [progress, setProgress] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [templateDownloaded, setTemplateDownloaded] = useState(false)
   const [manualDownloaded, setManualDownloaded] = useState(false)
 
-  const fileInputRef = useRef(null)
   const intervalRef = useRef(null)
 
   useEffect(() => {
@@ -51,12 +48,9 @@ export default function CertiNormal() {
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [isLoading])
 
@@ -83,9 +77,8 @@ export default function CertiNormal() {
 
       showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.")
     } catch (error) {
-      console.error("Error al descargar la plantilla:", error)
       setTemplateDownloaded(false)
-      showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.")
+      showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla.")
     }
   }
 
@@ -105,20 +98,6 @@ export default function CertiNormal() {
     setTimeout(() => {
       showAlert("success", "Descarga exitosa", "El manual de usuario se ha descargado correctamente.")
     }, 500)
-  }
-
-  const handleFileSelect = (event) => {
-    const selectedFiles = Array.from(event.target.files)
-    setErrorMessage("")
-    setIsUploaded(false)
-
-    if (!selectedFiles.length) {
-      showAlert("warning", "Carpeta no seleccionada", "Por favor selecciona una carpeta antes de continuar.")
-      return
-    }
-
-    setFiles(selectedFiles)
-    setIsUploaded(true)
   }
 
   const fetchProgress = async () => {
@@ -145,23 +124,14 @@ export default function CertiNormal() {
       }
 
       return "running"
-    } catch (error) {
+    } catch {
       return "error"
     }
   }
 
-  const resetForm = () => {
-    setFiles([])
-    setIsUploaded(false)
-    setErrorMessage("")
-    setProgress(0)
-    setIsLoading(false)
-    if (fileInputRef.current) fileInputRef.current.value = ""
-  }
-
-  const handleUploadAndExecute = async () => {
-    if (!files.length) {
-      showAlert("warning", "Ninguna carpeta seleccionada", "Selecciona una carpeta primero.")
+  const handleStartProcess = async () => {
+    if (!ruta.trim()) {
+      showAlert("warning", "Ruta no ingresada", "Por favor ingresa una ruta antes de continuar.")
       return
     }
 
@@ -169,21 +139,13 @@ export default function CertiNormal() {
     setProgress(0)
 
     try {
-      const formData = new FormData()
-      files.forEach((file) => {
-        formData.append("files", file, file.webkitRelativePath)
+      const response = await fetch(`${API_URL}/iniciar-automatizacion-masiva`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ruta }),
       })
 
-      const uploadResponse = await fetch(`${API_URL}/subir-carpeta`, {
-        method: "POST",
-        body: formData,
-      })
-      if (!uploadResponse.ok) throw new Error("Error al subir la carpeta")
-
-      const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
-        method: "POST",
-      })
-      if (!automationResponse.ok) throw new Error("Error en la automatización")
+      if (!response.ok) throw new Error("Error en la automatización masiva")
 
       intervalRef.current = setInterval(async () => {
         const status = await fetchProgress()
@@ -191,7 +153,6 @@ export default function CertiNormal() {
         if (status === "finished") {
           clearInterval(intervalRef.current)
           intervalRef.current = null
-
           Swal.fire({
             icon: "success",
             title: "Proceso finalizado",
@@ -199,7 +160,7 @@ export default function CertiNormal() {
             confirmButtonText: "Aceptar",
             background: "#ffffff",
             confirmButtonColor: "#16a34a",
-          }).then(() => resetForm())
+          }).then(() => setRuta(""))
         } else if (status === "error") {
           clearInterval(intervalRef.current)
           intervalRef.current = null
@@ -232,45 +193,23 @@ export default function CertiNormal() {
           <FaBook className="download-icon-inline icon-verde" onClick={handleDownloadManual} title="Descargar Manual" />
         </div>
 
-        {/* File Upload Section */}
-        <div className="action-section">
-          <h2 className="section-title">
-            <FaUpload className="upload-icon" />
-            Cargar Carpeta
-          </h2>
-          <div className="upload-section">
-            <div
-              className={`file-uploader ${isUploaded ? "uploaded" : ""} ${errorMessage ? "error" : ""}`}
-              onClick={() => !isLoading && fileInputRef.current?.click()}
-              role="button"
-              tabIndex={0}
-            >
-              {isUploaded ? (
-                <FaCheckCircle className="upload-icon success upload-icon-large" />
-              ) : errorMessage ? (
-                <FaExclamationTriangle className="upload-icon error upload-icon-large" />
-              ) : (
-                <FaCloudUploadAlt className="upload-icon upload-icon-large" />
-              )}
-              <div className="upload-text">
-                {errorMessage ? errorMessage : isUploaded ? `${files.length} archivos seleccionados` : "Haz clic aquí o selecciona una carpeta"}
+            <div className="folder-config">
+              <div className="folder-header">
+                <FaFolderPlus className="folder-icon" />
+                <h2 className="folder-title">Ruta de la carpeta principal</h2>
               </div>
               <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                className="file-input"
-                webkitdirectory="true"
-                directory=""
-                multiple
+                type="text"
+                value={ruta}
+                onChange={(e) => setRuta(e.target.value)}
+                className="folder-input"
+                placeholder="Ingresa la ruta de la carpeta"
                 disabled={isLoading}
               />
             </div>
-          </div>
-        </div>
 
-        {/* Process Button */}
-        <button onClick={handleUploadAndExecute} className="cert-button" disabled={isLoading}>
+        {/* Botón de inicio */}
+        <button onClick={handleStartProcess} className="cert-button" disabled={isLoading}>
           {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
         </button>
 

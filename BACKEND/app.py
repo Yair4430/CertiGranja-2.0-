@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 import threading
 
-# --- NUEVO ---
+# --- NUEVO --- 
 progreso = {"total": 0, "actual": 0, "finalizado": False}
 
 # Modulos de la Version 1 
@@ -144,34 +144,21 @@ def iniciar_automatizacion_masiva():
     data = request.get_json()
     ruta_principal = data.get("ruta")
 
-    if not ruta_principal or not os.path.isdir(ruta_principal):
-        return jsonify({"error": "Ruta inválida"}), 400
+    if not ruta_principal:
+        return jsonify({"error": "No se proporcionó una ruta"}), 400
 
-    subcarpetas = [
-        os.path.join(ruta_principal, d)
-        for d in os.listdir(ruta_principal)
-        if os.path.isdir(os.path.join(ruta_principal, d))
-    ]
-
-    if not subcarpetas:
-        return jsonify({"error": "No se encontraron subcarpetas"}), 400
-
-    total = len(subcarpetas)
-    progreso.update({"total": total, "actual": 0, "finalizado": False})
-
+    # 🚀 Correr en un hilo para no bloquear Flask
     def run_masivo():
-        for i, carpeta in enumerate(subcarpetas, start=1):
-            try:
-                procesar_carpeta_principal(ruta_principal)
-                progreso.update({"actual": i})
-            except Exception as e:
-                print(f"❌ Error en {carpeta}: {e}")
-
-        progreso.update({"finalizado": True})
+        try:
+            procesar_carpeta_principal(ruta_principal)
+            progreso.update({"finalizado": True})
+        except Exception as e:
+            logging.error(f"Error en automatización masiva: {e}")
+            progreso.update({"finalizado": True, "error": str(e)})
 
     threading.Thread(target=run_masivo, daemon=True).start()
 
-    return jsonify({"mensaje": f"Automatización masiva iniciada con {total} carpetas"}), 200
+    return jsonify({"mensaje": "Automatización masiva iniciada en segundo plano"}), 200
 
 if __name__ == '__main__':
     logging.info("Servidor iniciado en http://127.0.0.1:50400")
