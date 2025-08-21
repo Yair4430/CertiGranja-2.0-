@@ -209,7 +209,7 @@ export default function CertiNormal() {
       const data = await response.json()
       console.log("[v0] Progreso recibido:", data)
 
-      const { total, actual, finalizado, error } = data
+      const { total, actual, finalizado, error } = data.filas || {}
 
       if (error) {
         console.error("Error del backend:", error)

@@ -8,8 +8,19 @@ import logging
 from pathlib import Path
 import threading
 
-# --- NUEVO --- 
-progreso = {"total": 0, "actual": 0, "finalizado": False}
+progreso = {
+    "carpetas": {
+        "total": 0, 
+        "actual": 0, 
+        "finalizado": False,
+        "carpeta_actual": ""
+    },
+    "filas": {
+        "total": 0, 
+        "actual": 0, 
+        "finalizado": False
+    },
+}
 
 # Modulos de la Version 1 
 from V1.leerEXCEL import leer_excel
@@ -18,27 +29,28 @@ from V1.Plantilla import generar_plantilla
 from V1.generarResultados import generar_resultados
 
 # Modulos de la version 2
-from V2.navegacion_masivo import procesar_carpeta_principal
+from V2.navegacion_masivo import procesar_carpeta_principal, set_progreso_carpetas_callback
 
 logging.basicConfig(level=logging.DEBUG)
 
-# Agrega esta variable al inicio de tu archivo app.py
 ruta_carpeta_descargas = None
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para permitir peticiones desde React
+CORS(app)
 
 UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Crear carpeta si no existe
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.route('/progreso', methods=['GET'])
 def obtener_progreso():
+    """Devuelve el estado de progreso (carpetas y filas)."""
     return jsonify(progreso)
+
 
 @app.route('/crear-carpeta-descargas', methods=['POST'])
 def crear_carpeta_en_descargas():
-    global ruta_carpeta_descargas  # usamos la variable global
+    global ruta_carpeta_descargas
     try:
         data = request.get_json()
         nombre_carpeta = data.get('nombre')
@@ -50,16 +62,18 @@ def crear_carpeta_en_descargas():
         ruta_carpeta = os.path.join(carpeta_descargas, nombre_carpeta)
 
         os.makedirs(ruta_carpeta, exist_ok=True)
-        ruta_carpeta_descargas = ruta_carpeta  # Guardar la ruta
+        ruta_carpeta_descargas = ruta_carpeta
 
         return jsonify({"mensaje": f"Carpeta creada en: {ruta_carpeta}"}), 200
 
     except Exception as e:
         return jsonify({"error": f"No se pudo crear la carpeta: {str(e)}"}), 500
 
+
 @app.route('/')
 def home():
     return jsonify({"mensaje": "Servidor Flask funcionando correctamente"}), 200
+
 
 @app.route('/subir-excel', methods=['POST'])
 def subir_excel():
@@ -68,9 +82,10 @@ def subir_excel():
 
     file = request.files['file']
     filepath = os.path.join(UPLOAD_FOLDER, "archivo_subido.xlsx")
-    file.save(filepath)  # Guardar archivo con nombre fijo
+    file.save(filepath)
 
     return jsonify({"mensaje": "Archivo recibido correctamente"}), 200
+
 
 @app.route('/iniciar-automatizacion', methods=['POST'])
 def iniciar_automatizacion():
@@ -85,13 +100,14 @@ def iniciar_automatizacion():
     if datos is None:
         return jsonify({"error": "No hay datos para procesar"}), 400
 
+    # --- Resetear progreso filas ---
+    progreso["filas"] = {"total": len(datos), "actual": 0, "finalizado": False}
+
     def actualizar_progreso(data):
-        global progreso
-        progreso.update(data)
+        progreso["filas"].update(data)
 
     set_progreso_callback(actualizar_progreso)
 
-    # 🚀 Lanzar la automatización en un hilo aparte
     def run_automatizacion():
         resultados = automatizar_navegacion(datos, carpeta_destino=ruta_carpeta_descargas)
         generar_resultados(
@@ -99,16 +115,16 @@ def iniciar_automatizacion():
             nombre_archivo_salida="resultados_certificados.xlsx",
             carpeta_destino=ruta_carpeta_descargas
         )
-        progreso.update({"finalizado": True})
+        progreso["filas"].update({"finalizado": True})
 
     threading.Thread(target=run_automatizacion, daemon=True).start()
 
     return jsonify({"mensaje": "Automatización iniciada en segundo plano"}), 200
 
+
 @app.route('/descargar-plantilla', methods=['GET'])
 def descargar_plantilla():
     try:
-        # Generar la plantilla (esto crea plantilla.xlsx en la raíz del proyecto)
         generar_plantilla()
         archivo = "plantilla.xlsx"
 
@@ -118,12 +134,12 @@ def descargar_plantilla():
         return send_file(
             archivo,
             as_attachment=True,
-            download_name="plantilla.xlsx",  # nombre con el que se descargará
+            download_name="plantilla.xlsx",
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
     except Exception as e:
         return jsonify({"error": f"Error generando plantilla: {str(e)}"}), 500
+
 
 @app.route('/descargar-resultados', methods=['GET'])
 def descargar_resultados():
@@ -147,14 +163,44 @@ def iniciar_automatizacion_masiva():
     if not ruta_principal:
         return jsonify({"error": "No se proporcionó una ruta"}), 400
 
-    # 🚀 Correr en un hilo para no bloquear Flask
+    try:
+        subcarpetas = [
+            os.path.join(ruta_principal, d)
+            for d in os.listdir(ruta_principal)
+            if os.path.isdir(os.path.join(ruta_principal, d))
+        ]
+    except Exception as e:
+        return jsonify({"error": f"Error accediendo a la ruta: {str(e)}"}), 400
+
+    progreso["carpetas"] = {
+        "total": len(subcarpetas), 
+        "actual": 0, 
+        "finalizado": False,
+        "carpeta_actual": "Iniciando proceso..."
+    }
+    progreso["filas"] = {"total": 0, "actual": 0, "finalizado": False}
+
+    def actualizar_progreso_carpetas(data):
+        progreso["carpetas"].update(data)
+        # Resetear filas cuando cambia de carpeta
+        if not data.get("finalizado", False):
+            progreso["filas"] = {"total": 0, "actual": 0, "finalizado": False}
+
+    def actualizar_progreso_filas(data):
+        progreso["filas"].update(data)
+
+    set_progreso_carpetas_callback(actualizar_progreso_carpetas)
+
     def run_masivo():
         try:
-            procesar_carpeta_principal(ruta_principal)
-            progreso.update({"finalizado": True})
+            procesar_carpeta_principal(ruta_principal, actualizar_progreso_filas)
         except Exception as e:
             logging.error(f"Error en automatización masiva: {e}")
-            progreso.update({"finalizado": True, "error": str(e)})
+            progreso["carpetas"].update({
+                "finalizado": True, 
+                "error": str(e),
+                "carpeta_actual": "Error en el proceso"
+            })
 
     threading.Thread(target=run_masivo, daemon=True).start()
 
