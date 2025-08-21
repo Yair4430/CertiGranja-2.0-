@@ -94,123 +94,123 @@ export default function CertiMasivo() {
     }
   }
 
-const handleStartProcess = async () => {
-  if (!ruta.trim()) {
-    Swal.fire({
-      icon: "warning",
-      title: "Ruta no ingresada",
-      text: "Por favor ingresa una ruta antes de continuar.",
-      confirmButtonText: "Aceptar",
-      background: "#ffffff",
-      confirmButtonColor: "#0ea5e9",
-      customClass: {
-        popup: "rounded-xl shadow-lg",
-        title: "font-bold text-lg",
-        confirmButton: "px-4 py-2",
-      },
-    }).then(() => setRuta(""))
-    return
-  }
-
-  const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
-  const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
-
-  if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
-    Swal.fire({
-      icon: "error",
-      title: "Ruta inválida",
-      text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
-      confirmButtonText: "Aceptar",
-      background: "#ffffff",
-      confirmButtonColor: "#0ea5e9",
-      customClass: {
-        popup: "rounded-xl shadow-lg",
-        title: "font-bold text-lg",
-        confirmButton: "px-4 py-2",
-      },
-    }).then(() => setRuta(""))
-    return
-  }
-
-  // ✅ ALERTA ANTES DE INICIAR EL PROCESO
-  const result = await Swal.fire({
-    icon: "success",
-    title: "Carpeta encontrada",
-    text: "La carpeta se detectó exitosamente. Presiona Aceptar para iniciar el proceso.",
-    confirmButtonText: "Aceptar",
-    background: "#ffffff",
-    confirmButtonColor: "#0ea5e9",
-  })
-
-  // Solo si el usuario presiona "Aceptar"
-  if (result.isConfirmed) {
-    setIsLoading(true)
-    setTotalCarpetas(0)
-    setCarpetaActualIndex(0)
-    setProgressFilas(0)
-    setCarpetaActual("")
-
-    try {
-      const response = await fetch(`${API_URL}/iniciar-automatizacion-masiva`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ruta }),
-      })
-
-      if (!response.ok) throw new Error("Error en la automatización masiva")
-
-      // 🚀 Inicia el intervalo de progreso
-      intervalRef.current = setInterval(async () => {
-        const status = await fetchProgress()
-
-        if (status === "finished") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          Swal.fire({
-            icon: "success",
-            title: "Proceso finalizado",
-            text: "Los resultados ya están disponibles en la carpeta de descargas.",
-            confirmButtonText: "Aceptar",
-            background: "#ffffff",
-            confirmButtonColor: "#0ea5e9",
-          }).then(() => setRuta(""))
-        } else if (status === "error") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          Swal.fire({
-            icon: "error",
-            title: "Error en el proceso",
-            text: "Hubo un problema durante la automatización.",
-            confirmButtonText: "Aceptar",
-            background: "#ffffff",
-            confirmButtonColor: "#0ea5e9",
-          }).then(() => setRuta(""))
-          setTotalCarpetas(0)
-          setCarpetaActualIndex(0)
-          setProgressFilas(0)
-          setIsLoading(false)
-        }
-      }, 1500)
-    } catch (error) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
+  const handleStartProcess = async () => {
+    if (!ruta.trim()) {
       Swal.fire({
-        icon: "error",
-        title: "Error de conexión",
-        text: "No se pudo conectar con el servidor.",
+        icon: "warning",
+        title: "Ruta no ingresada",
+        text: "Por favor ingresa una ruta antes de continuar.",
         confirmButtonText: "Aceptar",
         background: "#ffffff",
         confirmButtonColor: "#0ea5e9",
+        customClass: {
+          popup: "rounded-xl shadow-lg",
+          title: "font-bold text-lg",
+          confirmButton: "px-4 py-2",
+        },
       }).then(() => setRuta(""))
+      return
+    }
+
+    const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
+    const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
+
+    if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
+      Swal.fire({
+        icon: "error",
+        title: "Ruta inválida",
+        text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
+        confirmButtonText: "Aceptar",
+        background: "#ffffff",
+        confirmButtonColor: "#0ea5e9",
+        customClass: {
+          popup: "rounded-xl shadow-lg",
+          title: "font-bold text-lg",
+          confirmButton: "px-4 py-2",
+        },
+      }).then(() => setRuta(""))
+      return
+    }
+
+    // ✅ ALERTA ANTES DE INICIAR EL PROCESO
+    const result = await Swal.fire({
+      icon: "success",
+      title: "Carpeta encontrada",
+      text: "La carpeta se detectó exitosamente. Presiona Aceptar para iniciar el proceso.",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+    })
+
+    // Solo si el usuario presiona "Aceptar"
+    if (result.isConfirmed) {
+      setIsLoading(true)
       setTotalCarpetas(0)
       setCarpetaActualIndex(0)
       setProgressFilas(0)
-      setIsLoading(false)
+      setCarpetaActual("")
+
+      try {
+        const response = await fetch(`${API_URL}/iniciar-automatizacion-masiva`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ruta }),
+        })
+
+        if (!response.ok) throw new Error("Error en la automatización masiva")
+
+        // 🚀 Inicia el intervalo de progreso
+        intervalRef.current = setInterval(async () => {
+          const status = await fetchProgress()
+
+          if (status === "finished") {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+            Swal.fire({
+              icon: "success",
+              title: "Proceso finalizado",
+              text: "Los resultados ya están disponibles en la carpeta de descargas.",
+              confirmButtonText: "Aceptar",
+              background: "#ffffff",
+              confirmButtonColor: "#0ea5e9",
+            }).then(() => setRuta(""))
+          } else if (status === "error") {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+            Swal.fire({
+              icon: "error",
+              title: "Error en el proceso",
+              text: "Hubo un problema durante la automatización.",
+              confirmButtonText: "Aceptar",
+              background: "#ffffff",
+              confirmButtonColor: "#0ea5e9",
+            }).then(() => setRuta(""))
+            setTotalCarpetas(0)
+            setCarpetaActualIndex(0)
+            setProgressFilas(0)
+            setIsLoading(false)
+          }
+        }, 1500)
+      } catch (error) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Error de conexión",
+          text: "No se pudo conectar con el servidor.",
+          confirmButtonText: "Aceptar",
+          background: "#ffffff",
+          confirmButtonColor: "#0ea5e9",
+        }).then(() => setRuta(""))
+        setTotalCarpetas(0)
+        setCarpetaActualIndex(0)
+        setProgressFilas(0)
+        setIsLoading(false)
+      }
     }
   }
-}
 
   const handleDownloadTemplate = async () => {
     if (templateDownloaded) {
@@ -295,31 +295,35 @@ const handleStartProcess = async () => {
 
         {isLoading && (
           <div className="progress-section">
-            <div className="progress-item">
+            {/* === Progreso de Carpetas === */}
+            <div className="progress-card">
               <div className="progress-header">
                 <FaFolder className="progress-icon" />
                 <span className="progress-label">Progreso de Carpetas</span>
               </div>
-              <div className="progress-text-display">
-                <span className="folder-count">
+              <div className="progress-content">
+                <span className="progress-text">
                   Carpeta {carpetaActualIndex} de {totalCarpetas}
                 </span>
                 {carpetaActual && (
                   <div className="current-folder">
-                    <span className="current-label">Procesando: {carpetaActual}</span>
+                    <span className="current-label">📂 {carpetaActual}</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="progress-item">
+            {/* === Progreso de Filas === */}
+            <div className="progress-card">
               <div className="progress-header">
                 <FaFileAlt className="progress-icon" />
-                <span className="progress-label">Progreso de Filas (Carpeta Actual)</span>
+                <span className="progress-label">Progreso de Filas</span>
               </div>
               <div className="progress-bar-container">
-                <progress value={progressFilas} max="100" className="progress-bar" />
-                <span className="progress-text">{progressFilas}%</span>
+                <div className="progress-bar-wrapper">
+                  <progress value={progressFilas} max="100" className="progress-bar" />
+                  <span className="progress-percentage">{progressFilas}%</span>
+                </div>
               </div>
             </div>
           </div>

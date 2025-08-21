@@ -191,6 +191,7 @@
   transition: background 0.2s, transform 0.2s;
   width: 100%;
   font-family: inherit;
+  margin-bottom: -10px; /* Reduciendo margen de 16px a 8px para menor separación */
 }
 
 .certButton:hover {
@@ -205,38 +206,102 @@
 }
 
 /* ===== Progress Bar ===== */
+/* Barra de progreso */
 .progressSection {
-  margin-top: 20px;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .progressBarContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
 }
 
 .progressBar {
   width: 100%;
-  height: 16px;
-  border-radius: 10px;
-  overflow: hidden;
+  height: 22px;
+  -webkit-appearance: none;
   appearance: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5e7eb; /* gris claro */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilo de la barra en navegadores Webkit (Chrome, Edge, Safari) */
 .progressBar::-webkit-progress-bar {
   background: #e5e7eb;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .progressBar::-webkit-progress-value {
-  background: #16a34a;
-  border-radius: 10px;
+  background: linear-gradient(90deg, #16a34a, #4ade80); /* verde degradado */
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out;
+}
+
+/* Estilo para Firefox */
+.progressBar::-moz-progress-bar {
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out;
 }
 
 .progressText {
-  font-size: 0.9rem;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   font-weight: bold;
+  font-size: 0.85rem;
+  color: #fff;
+  line-height: 22px;
+}
+
+/* ===== Progress Bar ===== */
+/* Barra de progreso */
+.progressSection {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Agregando estilos para progress-card como en CertiMasivo */
+.progressCard {
+  width: 340px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progressIcon {
+  font-size: 18px;
   color: #16a34a;
+}
+
+.progressLabel {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.progressBarContainer {
+  width: 100%;
+  position: relative;
 }
 
 /* ===== Spinner ===== */

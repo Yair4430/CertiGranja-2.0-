@@ -1,4 +1,3 @@
-
 * {
   margin: 0;
   padding: 0;
@@ -98,7 +97,7 @@ body {
 
 .input-ruta {
   padding: 10px;
-  width: 100%;       /* se adapta al contenedor */
+  width: 100%; /* se adapta al contenedor */
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 1rem;
@@ -203,6 +202,7 @@ body {
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
   width: 100%;
+  margin-bottom: -10px; /* Reduciendo margen de 16px a 8px para menor separación */
 }
 
 .cert-button:hover {
@@ -216,9 +216,13 @@ body {
   transform: none;
 }
 
-/* ===== Progress Bar ===== */
+/* ===== Progress Bar MEJORADA ===== */
+/* Aplicando estilos mejorados de CertiNormal con colores azules */
 .progress-section {
-  margin-top: 20px;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .progress-bar-container {
@@ -227,22 +231,51 @@ body {
   gap: 10px;
 }
 
-.progress-bar {
+.progress-bar-wrapper {
   width: 100%;
-  height: 16px;
-  border-radius: 10px;
-  overflow: hidden;
-  appearance: none;
+  max-width: 400px;
+  position: relative;
 }
 
+.progress-bar {
+  width: 100%;
+  height: 22px; /* Aumentado de 18px a 22px como en CertiNormal */
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 12px; /* Aumentado de 10px a 12px */
+  overflow: hidden;
+  background: #e5e7eb; /* gris claro */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra interna añadida */
+}
+
+/* Estilo de la barra en navegadores Webkit (Chrome, Edge, Safari) */
 .progress-bar::-webkit-progress-bar {
   background: #e5e7eb;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .progress-bar::-webkit-progress-value {
-  background: #0ea5e9;
-  border-radius: 10px;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8); /* Gradiente azul mejorado */
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out; /* Transición suave añadida */
+}
+
+/* Estilo para Firefox */
+.progress-bar::-moz-progress-bar {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out; /* Transición suave añadida */
+}
+
+.progress-percentage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: #fff; /* Texto blanco centrado */
+  line-height: 22px; /* Ajustado a la nueva altura */
 }
 
 .progress-text {
@@ -284,7 +317,8 @@ body {
 }
 
 /* Íconos de carpeta y carga */
-.folder-icon, .upload-icon {
+.folder-icon,
+.upload-icon {
   font-size: 25px;
   color: #0ea5e9;
 }
@@ -305,11 +339,11 @@ body {
 /* === Configuración de Carpeta === */
 .folder-config {
   border: 1px solid #e5e7eb;
-  width: 340px;       /* se adapta al contenedor */
+  width: 340px; /* se adapta al contenedor */
   border-radius: 12px;
   padding: 16px;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .folder-header {
@@ -342,7 +376,46 @@ body {
 
 .folder-input:focus {
   border-color: #0ea5e9;
-  box-shadow: 0 0 4px rgba(22,163,74,0.4);
+  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
+}
+
+/* ===== Tarjetas de progreso ===== */
+.progress-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px; /* Reduciendo margen de 16px a 8px para menor separación */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 340px; /* Aplicando el mismo ancho que folder-config */
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.progress-icon {
+  font-size: 20px;
+  color: #0ea5e9;
+}
+
+.progress-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #0ea5e9;
+}
+
+.current-folder {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0ea5e9;
 }
 
 @keyframes spin {
