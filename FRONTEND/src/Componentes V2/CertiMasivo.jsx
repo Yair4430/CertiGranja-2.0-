@@ -129,56 +129,104 @@ export default function CertiMasivo() {
     }
   }
 
-  const handleStartProcess = async () => {
-    if (!ruta.trim()) {
-      showAlert("warning", "Ruta no ingresada", "Por favor ingresa una ruta antes de continuar.")
-      return
-    }
+const handleStartProcess = async () => {
+  if (!ruta.trim()) {
+    Swal.fire({
+      icon: "warning",
+      title: "Ruta no ingresada",
+      text: "Por favor ingresa una ruta antes de continuar.",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2",
+      },
+    }).then(() => setRuta("")) // 🔹 Limpia el campo al aceptar
+    return
+  }
 
-    setIsLoading(true)
-    setProgress(0)
+  // Regex para Windows (ejemplo: C:\Carpeta\Subcarpeta)
+  const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
+  // Regex para Linux/Mac (ejemplo: /home/usuario/carpeta)
+  const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
 
-    try {
-      const response = await fetch(`${API_URL}/iniciar-automatizacion-masiva`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ruta }),
-      })
+  if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
+    Swal.fire({
+      icon: "error",
+      title: "Ruta inválida",
+      text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2",
+      },
+    }).then(() => setRuta("")) // 🔹 Limpia el campo al aceptar
+    return
+  }
 
-      if (!response.ok) throw new Error("Error en la automatización masiva")
+  setIsLoading(true)
+  setProgress(0)
 
-      intervalRef.current = setInterval(async () => {
-        const status = await fetchProgress()
+  try {
+    const response = await fetch(`${API_URL}/iniciar-automatizacion-masiva`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ruta }),
+    })
 
-        if (status === "finished") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          Swal.fire({
-            icon: "success",
-            title: "Proceso finalizado",
-            text: "Los resultados ya están disponibles en la carpeta de descargas.",
-            confirmButtonText: "Aceptar",
-            background: "#ffffff",
-            confirmButtonColor: "#16a34a",
-          }).then(() => setRuta(""))
-        } else if (status === "error") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          showAlert("error", "Error en el proceso", "Hubo un problema durante la automatización.")
-          setProgress(0)
-          setIsLoading(false)
-        }
-      }, 1500)
-    } catch (error) {
-      if (intervalRef.current) {
+    if (!response.ok) throw new Error("Error en la automatización masiva")
+
+    intervalRef.current = setInterval(async () => {
+      const status = await fetchProgress()
+
+      if (status === "finished") {
         clearInterval(intervalRef.current)
         intervalRef.current = null
+        Swal.fire({
+          icon: "success",
+          title: "Proceso finalizado",
+          text: "Los resultados ya están disponibles en la carpeta de descargas.",
+          confirmButtonText: "Aceptar",
+          background: "#ffffff",
+          confirmButtonColor: "#0ea5e9",
+        }).then(() => setRuta("")) // 🔹 Limpia al finalizar también
+      } else if (status === "error") {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        Swal.fire({
+          icon: "error",
+          title: "Error en el proceso",
+          text: "Hubo un problema durante la automatización.",
+          confirmButtonText: "Aceptar",
+          background: "#ffffff",
+          confirmButtonColor: "#0ea5e9",
+        }).then(() => setRuta("")) // 🔹 Limpia también si falla
+        setProgress(0)
+        setIsLoading(false)
       }
-      showAlert("error", "Error de conexión", "No se pudo conectar con el servidor.")
-      setProgress(0)
-      setIsLoading(false)
+    }, 1500)
+  } catch (error) {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
+    Swal.fire({
+      icon: "error",
+      title: "Error de conexión",
+      text: "No se pudo conectar con el servidor.",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+    }).then(() => setRuta("")) // 🔹 Limpia en error de conexión
+    setProgress(0)
+    setIsLoading(false)
   }
+}
 
   return (
     <div className="cert-container">
