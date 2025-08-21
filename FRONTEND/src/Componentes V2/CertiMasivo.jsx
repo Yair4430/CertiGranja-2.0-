@@ -94,44 +94,56 @@ export default function CertiMasivo() {
     }
   }
 
-  const handleStartProcess = async () => {
-    if (!ruta.trim()) {
-      Swal.fire({
-        icon: "warning",
-        title: "Ruta no ingresada",
-        text: "Por favor ingresa una ruta antes de continuar.",
-        confirmButtonText: "Aceptar",
-        background: "#ffffff",
-        confirmButtonColor: "#0ea5e9",
-        customClass: {
-          popup: "rounded-xl shadow-lg",
-          title: "font-bold text-lg",
-          confirmButton: "px-4 py-2",
-        },
-      }).then(() => setRuta(""))
-      return
-    }
+const handleStartProcess = async () => {
+  if (!ruta.trim()) {
+    Swal.fire({
+      icon: "warning",
+      title: "Ruta no ingresada",
+      text: "Por favor ingresa una ruta antes de continuar.",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2",
+      },
+    }).then(() => setRuta(""))
+    return
+  }
 
-    const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
-    const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
+  const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
+  const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
 
-    if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
-      Swal.fire({
-        icon: "error",
-        title: "Ruta inválida",
-        text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
-        confirmButtonText: "Aceptar",
-        background: "#ffffff",
-        confirmButtonColor: "#0ea5e9",
-        customClass: {
-          popup: "rounded-xl shadow-lg",
-          title: "font-bold text-lg",
-          confirmButton: "px-4 py-2",
-        },
-      }).then(() => setRuta(""))
-      return
-    }
+  if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
+    Swal.fire({
+      icon: "error",
+      title: "Ruta inválida",
+      text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#0ea5e9",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2",
+      },
+    }).then(() => setRuta(""))
+    return
+  }
 
+  // ✅ ALERTA ANTES DE INICIAR EL PROCESO
+  const result = await Swal.fire({
+    icon: "success",
+    title: "Carpeta encontrada",
+    text: "La carpeta se detectó exitosamente. Presiona Aceptar para iniciar el proceso.",
+    confirmButtonText: "Aceptar",
+    background: "#ffffff",
+    confirmButtonColor: "#0ea5e9",
+  })
+
+  // Solo si el usuario presiona "Aceptar"
+  if (result.isConfirmed) {
     setIsLoading(true)
     setTotalCarpetas(0)
     setCarpetaActualIndex(0)
@@ -147,6 +159,7 @@ export default function CertiMasivo() {
 
       if (!response.ok) throw new Error("Error en la automatización masiva")
 
+      // 🚀 Inicia el intervalo de progreso
       intervalRef.current = setInterval(async () => {
         const status = await fetchProgress()
 
@@ -197,6 +210,7 @@ export default function CertiMasivo() {
       setIsLoading(false)
     }
   }
+}
 
   const handleDownloadTemplate = async () => {
     if (templateDownloaded) {

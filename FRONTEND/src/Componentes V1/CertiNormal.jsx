@@ -246,85 +246,101 @@ export default function CertiNormal() {
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  const handleUploadAndExecute = async () => {
-    if (!file) {
-      showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
-      return
-    }
+const handleUploadAndExecute = async () => {
+  if (!file) {
+    showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
+    return
+  }
 
-    const carpetaCreada = await handleCrearCarpeta()
-    if (!carpetaCreada) return
+  // Primero creamos la carpeta
+  const carpetaCreada = await handleCrearCarpeta()
+  if (!carpetaCreada) return
 
-    setIsLoading(true)
-    setProgress(0)
+  // ✅ Mostramos alerta y esperamos a que el usuario confirme
+  const result = await Swal.fire({
+    icon: "success",
+    title: "Carpeta y Excel cargado",
+    text: "La carpeta se creó correctamente. Presiona Aceptar para iniciar el proceso.",
+    confirmButtonText: "Aceptar",
+    background: "#ffffff",
+    confirmButtonColor: "#16a34a",
+    customClass: {
+      popup: "rounded-xl shadow-lg",
+      title: "font-bold text-lg",
+      confirmButton: "px-4 py-2",
+    },
+  })
 
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
+  if (!result.isConfirmed) return // si el usuario cancela, no hacemos nada
 
-      const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
-        method: "POST",
-        body: formData,
-      })
-      if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
+  // Ahora sí iniciamos la subida y automatización
+  setIsLoading(true)
+  setProgress(0)
 
-      const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
-        method: "POST",
-      })
-      if (!automationResponse.ok) throw new Error("Error en la automatización")
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
 
-      console.log("[v0] Iniciando monitoreo del progreso")
+    const uploadResponse = await fetch(`${API_URL}/subir-excel`, {
+      method: "POST",
+      body: formData,
+    })
+    if (!uploadResponse.ok) throw new Error("Error al subir el archivo")
 
-      intervalRef.current = setInterval(async () => {
-        const status = await fetchProgress(setProgress, setIsLoading)
+    const automationResponse = await fetch(`${API_URL}/iniciar-automatizacion`, {
+      method: "POST",
+    })
+    if (!automationResponse.ok) throw new Error("Error en la automatización")
 
-        if (status === "finished") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          console.log("[v0] Proceso completado exitosamente")
+    console.log("[v0] Iniciando monitoreo del progreso")
 
-          Swal.fire({
-            icon: "success",
-            title: "Proceso finalizado",
-            text: "Los resultados ya están disponibles en la carpeta de descargas.",
-            confirmButtonText: "Aceptar",
-            background: "#ffffff",
-            confirmButtonColor: "#16a34a",
-            customClass: {
-              popup: "rounded-xl shadow-lg",
-              title: "font-bold text-lg",
-              confirmButton: "px-4 py-2",
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              resetForm()
-            }
-          })
-        } else if (status === "error") {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-          console.log("[v0] Error en el proceso")
+    intervalRef.current = setInterval(async () => {
+      const status = await fetchProgress(setProgress, setIsLoading)
 
-          showAlert(
-            "error",
-            "Error en el proceso",
-            "Hubo un problema durante la automatización. Por favor, inténtalo nuevamente.",
-          )
-          setProgress(0)
-          setIsLoading(false)
-        }
-      }, 1500)
-    } catch (error) {
-      console.error("Error al procesar:", error)
-      if (intervalRef.current) {
+      if (status === "finished") {
         clearInterval(intervalRef.current)
         intervalRef.current = null
+        console.log("[v0] Proceso completado exitosamente")
+
+        Swal.fire({
+          icon: "success",
+          title: "Proceso finalizado",
+          text: "Los resultados ya están disponibles en la carpeta de descargas.",
+          confirmButtonText: "Aceptar",
+          background: "#ffffff",
+          confirmButtonColor: "#16a34a",
+          customClass: {
+            popup: "rounded-xl shadow-lg",
+            title: "font-bold text-lg",
+            confirmButton: "px-4 py-2",
+          },
+        }).then(() => resetForm())
+      } else if (status === "error") {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        console.log("[v0] Error en el proceso")
+
+        showAlert(
+          "error",
+          "Error en el proceso",
+          "Hubo un problema durante la automatización. Por favor, inténtalo nuevamente."
+        )
+        setProgress(0)
+        setIsLoading(false)
       }
-      showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
-      setProgress(0)
-      setIsLoading(false)
+    }, 1500)
+  } catch (error) {
+    console.error("Error al procesar:", error)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
+    showAlert("error", "Error de conexión", "No se pudo conectar con el servidor. Inténtalo nuevamente.")
+    setProgress(0)
+    setIsLoading(false)
   }
+}
+
 
   const handleFileDrop = (event) => {
     event.preventDefault()
