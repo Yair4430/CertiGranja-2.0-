@@ -41,14 +41,13 @@ const showAlert = (type, title, text) => {
   })
 }
 
-export default function CertiNormal() {
+export default function CertiNormal({ isLoading, setIsLoading }) {
   const [nombreCarpeta, setNombreCarpeta] = useState("")
   const [file, setFile] = useState(null)
   const [fileName, setFileName] = useState("")
   const [isUploaded, setIsUploaded] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [progress, setProgress] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
   const [templateDownloaded, setTemplateDownloaded] = useState(false)
   const [manualDownloaded, setManualDownloaded] = useState(false)
 
@@ -84,12 +83,11 @@ export default function CertiNormal() {
       const response = await fetch(`${API_URL}/descargar-plantilla`)
       if (!response.ok) throw new Error("No se pudo descargar la plantilla")
 
-      // Intentamos leer como blob directamente
       const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = "plantilla.xlsx" // Nombre del archivo a descargar
+      a.download = "plantilla.xlsx"
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -252,11 +250,9 @@ export default function CertiNormal() {
       return
     }
 
-    // Primero creamos la carpeta
     const carpetaCreada = await handleCrearCarpeta()
     if (!carpetaCreada) return
 
-    // ✅ Mostramos alerta y esperamos a que el usuario confirme
     const result = await Swal.fire({
       icon: "success",
       title: "Carpeta y Excel cargado",
@@ -271,9 +267,8 @@ export default function CertiNormal() {
       },
     })
 
-    if (!result.isConfirmed) return // si el usuario cancela, no hacemos nada
+    if (!result.isConfirmed) return
 
-    // Ahora sí iniciamos la subida y automatización
     setIsLoading(true)
     setProgress(0)
 
@@ -346,20 +341,17 @@ export default function CertiNormal() {
     event.stopPropagation()
     const droppedFile = event.dataTransfer.files[0]
     if (droppedFile) {
-      handleFileSelect({ target: { files: [droppedFile] } }) // reutilizamos la validación existente
+      handleFileSelect({ target: { files: [droppedFile] } })
     }
   }
 
   return (
     <div className={styles.certContainer}>
-      {/* Header Section */}
       <div className={styles.certHeader}>
         <h1 className={styles.certTitle}>CertiGranja</h1>
       </div>
 
-      {/* Content Section */}
       <div className={styles.certContent}>
-        {/* Íconos de descarga */}
         <div className={styles.resourcesIcons}>
           <FaFileDownload
             className={styles.downloadIconInline}
@@ -369,7 +361,6 @@ export default function CertiNormal() {
           <FaBook className={styles.downloadIconInline} onClick={handleDownloadManual} title="Descargar Manual" />
         </div>
 
-        {/* Folder Creation Section */}
         <div className={styles.actionSection}>
           <h2 className={styles.sectionTitle}>
             <FaFolderPlus className={styles.folderIcon} />
@@ -389,7 +380,6 @@ export default function CertiNormal() {
           </div>
         </div>
 
-        {/* File Upload Section */}
         <div className={styles.actionSection}>
           <h2 className={styles.sectionTitle}>
             <FaUpload className={styles.uploadIcon} />
@@ -445,12 +435,10 @@ export default function CertiNormal() {
           </div>
         </div>
 
-        {/* Process Button */}
         <button onClick={handleUploadAndExecute} className={styles.certButton} disabled={isLoading}>
           {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
         </button>
 
-        {/* Progress Section */}
         {isLoading && (
           <div className={styles.progressSection}>
             <div className={styles.progressCard}>
