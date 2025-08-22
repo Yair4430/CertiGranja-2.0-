@@ -1,10 +1,9 @@
-"use client"
-
 import { useState, useEffect, useRef } from "react"
-import { FaFileDownload, FaBook, FaFolderPlus, FaFolder, FaFileAlt } from "react-icons/fa"
+import { FaFileDownload, FaInfoCircle, FaFolderPlus, FaFolder, FaFileAlt } from "react-icons/fa"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
 import "./CertiMasivo.css"
+import InfoModalMasivo from "./InfoModalMasivo"
 
 const getApiUrl = () => {
   try {
@@ -40,6 +39,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
   const [carpetaActual, setCarpetaActual] = useState("")
   const [templateDownloaded, setTemplateDownloaded] = useState(false)
   const [manualDownloaded, setManualDownloaded] = useState(false)
+  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const intervalRef = useRef(null)
 
@@ -257,7 +257,11 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
             onClick={handleDownloadTemplate}
             title="Descargar Plantilla"
           />
-          <FaBook className="download-icon-inline icon-verde" onClick={handleDownloadManual} title="Descargar Manual" />
+          <FaInfoCircle
+            className="download-icon-inline icon-verde"
+            onClick={() => setShowInfoModal(true)}
+            title="Información de uso"
+          />
         </div>
 
         <div className="folder-config">
@@ -315,6 +319,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
           </div>
         )}
       </div>
+        <InfoModalMasivo isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     </div>
   )
 }

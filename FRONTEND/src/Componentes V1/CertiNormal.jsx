@@ -9,11 +9,13 @@ import {
   FaBook,
   FaFolderPlus,
   FaUpload,
+  FaInfoCircle 
 } from "react-icons/fa"
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
 import styles from "./CertiNormal.module.css"
+import InfoModal from "./InfoModalNormal"
 
 const getApiUrl = () => {
   try {
@@ -50,6 +52,9 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
   const [progress, setProgress] = useState(0)
   const [templateDownloaded, setTemplateDownloaded] = useState(false)
   const [manualDownloaded, setManualDownloaded] = useState(false)
+
+    // 👇 agrega este estado para el modal
+  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const fileInputRef = useRef(null)
   const intervalRef = useRef(null)
@@ -358,7 +363,11 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
             onClick={handleDownloadTemplate}
             title="Descargar Plantilla"
           />
-          <FaBook className={styles.downloadIconInline} onClick={handleDownloadManual} title="Descargar Manual" />
+          <FaInfoCircle
+            className={styles.downloadIconInline}
+            onClick={() => setShowInfoModal(true)}
+            title="Información de uso"
+          />
         </div>
 
         <div className={styles.actionSection}>
@@ -454,6 +463,7 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
           </div>
         )}
       </div>
+        <InfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     </div>
   )
 }
