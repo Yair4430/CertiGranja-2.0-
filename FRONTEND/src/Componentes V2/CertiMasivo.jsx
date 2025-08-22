@@ -211,10 +211,35 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
     }
   }
 
-  const handleDownloadTemplate = () => {
-    // Implement template download logic here
-  }
+  const handleDownloadTemplate = async () => {
+    if (templateDownloaded) {
+      showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.")
+      return
+    }
+    setTemplateDownloaded(true)
 
+    try {
+      const response = await fetch(`${API_URL}/descargar-plantilla`)
+      if (!response.ok) throw new Error("No se pudo descargar la plantilla")
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "plantilla.xlsx"
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      showAlert("success", "Descarga exitosa", "La plantilla se ha descargado correctamente.")
+    } catch (error) {
+      console.error("Error al descargar la plantilla:", error)
+      setTemplateDownloaded(false)
+      showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.")
+    }
+  }
+  
   const handleDownloadManual = () => {
     // Implement manual download logic here
   }
