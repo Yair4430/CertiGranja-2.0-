@@ -373,7 +373,7 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
         <div className={styles.actionSection}>
           <h2 className={styles.sectionTitle}>
             <FaFolderPlus className={styles.folderIcon} />
-            Configuración de Carpeta
+            Nombre de la Carpeta
           </h2>
           <div className={styles.folderSection}>
             <div className={styles.inputGroup}>

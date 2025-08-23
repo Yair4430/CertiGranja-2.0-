@@ -39,7 +39,7 @@ body {
 .cert-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #0ea5e9; /* Azul cielo */
+  color: #8b5cf6; /* Morado */
 }
 
 .cert-subtitle {
@@ -79,14 +79,14 @@ body {
 
 .download-icon-inline {
   font-size: 28px;
-  color: #0ea5e9; /* Azul cielo */
+  color: #8b5cf6; /* Morado */
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
 }
 
 .download-icon-inline:hover {
   transform: scale(1.1);
-  color: #0284c7; /* Azul más oscuro */
+  color: #7c3aed; /* Morado oscuro */
 }
 
 /* ===== Inputs ===== */
@@ -106,8 +106,8 @@ body {
 }
 
 .input-ruta:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 4px rgba(14, 165, 233, 0.4);
+  border-color: #8b5cf6; /* Morado */
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.4); /* Morado */
 }
 
 /* ===== Título y subtítulo del input ===== */
@@ -134,7 +134,7 @@ body {
 }
 
 .file-uploader {
-  border: 2px dashed #0ea5e9;
+  border: 2px dashed #8b5cf6; /* Morado */
   border-radius: 12px;
   padding: 24px;
   text-align: center;
@@ -145,8 +145,8 @@ body {
 }
 
 .file-uploader:hover {
-  border-color: #0284c7;
-  background: #e0f2fe;
+  border-color: #7c3aed; /* Morado oscuro */
+  background: #f3e8ff; /* Morado claro */
 }
 
 .upload-icon {
@@ -156,7 +156,7 @@ body {
 }
 
 .upload-icon.success {
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 .upload-icon.error {
@@ -176,7 +176,7 @@ body {
 .status-indicator {
   margin-top: 10px;
   font-size: 0.9rem;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -192,7 +192,7 @@ body {
 
 /* ===== Button ===== */
 .cert-button {
-  background: #0ea5e9;
+  background: #8b5cf6; /* Morado */
   color: white;
   border: none;
   padding: 12px;
@@ -206,7 +206,7 @@ body {
 }
 
 .cert-button:hover {
-  background: #0284c7;
+  background: #7c3aed; /* Morado oscuro */
   transform: scale(1.02);
 }
 
@@ -255,14 +255,14 @@ body {
 }
 
 .progress-bar::-webkit-progress-value {
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8); /* Gradiente azul mejorado */
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa); /* Gradiente morado mejorado */
   border-radius: 12px;
   transition: width 0.4s ease-in-out; /* Transición suave añadida */
 }
 
 /* Estilo para Firefox */
 .progress-bar::-moz-progress-bar {
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
   border-radius: 12px;
   transition: width 0.4s ease-in-out; /* Transición suave añadida */
 }
@@ -281,14 +281,14 @@ body {
 .progress-text {
   font-size: 0.9rem;
   font-weight: bold;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 /* ===== Spinner ===== */
 .spinner {
   margin: 14px auto;
   border: 4px solid #e5e7eb;
-  border-top: 4px solid #0ea5e9;
+  border-top: 4px solid #8b5cf6; /* Morado */
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -306,33 +306,33 @@ body {
 /* Íconos */
 .download-icon-inline {
   font-size: 40px;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
 }
 
 .download-icon-inline:hover {
   transform: scale(1.2);
-  color: #0284c7;
+  color: #7c3aed; /* Morado oscuro */
 }
 
 /* Íconos de carpeta y carga */
 .folder-icon,
 .upload-icon {
   font-size: 25px;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 /* Ícono grande dentro del uploader */
 .upload-icon-large {
   font-size: 50px;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
   margin-bottom: 10px;
 }
 
 .file-uploader.drag-over {
-  border-color: #0284c7;
-  background-color: #e0f2fe;
+  border-color: #7c3aed; /* Morado oscuro */
+  background-color: #f3e8ff; /* Morado claro */
   transform: scale(1.02);
 }
 
@@ -355,7 +355,7 @@ body {
 
 .folder-icon {
   font-size: 22px;
-  color: #0ea5e9; /* Verde */
+  color: #8b5cf6; /* Morado */
 }
 
 .folder-title {
@@ -375,8 +375,8 @@ body {
 }
 
 .folder-input:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
+  border-color: #8b5cf6; /* Morado */
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.4); /* Morado */
 }
 
 /* ===== Tarjetas de progreso ===== */
@@ -401,7 +401,7 @@ body {
 
 .progress-icon {
   font-size: 20px;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 .progress-content {
@@ -409,13 +409,13 @@ body {
   flex-direction: column;
   gap: 6px;
   font-size: 0.95rem;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 .current-folder {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #0ea5e9;
+  color: #8b5cf6; /* Morado */
 }
 
 @keyframes spin {

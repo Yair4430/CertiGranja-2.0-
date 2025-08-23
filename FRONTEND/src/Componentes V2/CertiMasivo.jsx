@@ -22,7 +22,7 @@ const showAlert = (type, title, text) => {
     text: text,
     confirmButtonText: "Aceptar",
     background: "#ffffff",
-    confirmButtonColor: "#0ea5e9",
+    confirmButtonColor: "#8b5cf6",
     customClass: {
       popup: "rounded-xl shadow-lg",
       title: "font-bold text-lg",
@@ -101,7 +101,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
         text: "Por favor ingresa una ruta antes de continuar.",
         confirmButtonText: "Aceptar",
         background: "#ffffff",
-        confirmButtonColor: "#0ea5e9",
+        confirmButtonColor: "#8b5cf6",
         customClass: {
           popup: "rounded-xl shadow-lg",
           title: "font-bold text-lg",
@@ -121,7 +121,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
         text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
         confirmButtonText: "Aceptar",
         background: "#ffffff",
-        confirmButtonColor: "#0ea5e9",
+        confirmButtonColor: "#8b5cf6",
         customClass: {
           popup: "rounded-xl shadow-lg",
           title: "font-bold text-lg",
@@ -138,7 +138,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
       text: "La carpeta se detectó exitosamente. Presiona Aceptar para iniciar el proceso.",
       confirmButtonText: "Aceptar",
       background: "#ffffff",
-      confirmButtonColor: "#0ea5e9",
+      confirmButtonColor: "#8b5cf6",
     })
 
     // Solo si el usuario presiona "Aceptar"
@@ -171,7 +171,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
               text: "Los resultados ya están disponibles en la carpeta de descargas.",
               confirmButtonText: "Aceptar",
               background: "#ffffff",
-              confirmButtonColor: "#0ea5e9",
+              confirmButtonColor: "#8b5cf6",
             }).then(() => setRuta(""))
           } else if (status === "error") {
             clearInterval(intervalRef.current)
@@ -182,7 +182,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
               text: "Hubo un problema durante la automatización.",
               confirmButtonText: "Aceptar",
               background: "#ffffff",
-              confirmButtonColor: "#0ea5e9",
+              confirmButtonColor: "#8b5cf6",
             }).then(() => setRuta(""))
             setTotalCarpetas(0)
             setCarpetaActualIndex(0)
@@ -201,7 +201,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
           text: "No se pudo conectar con el servidor.",
           confirmButtonText: "Aceptar",
           background: "#ffffff",
-          confirmButtonColor: "#0ea5e9",
+          confirmButtonColor: "#8b5cf6",
         }).then(() => setRuta(""))
         setTotalCarpetas(0)
         setCarpetaActualIndex(0)
