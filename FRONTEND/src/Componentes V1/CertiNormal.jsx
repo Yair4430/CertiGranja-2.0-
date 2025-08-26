@@ -1,16 +1,5 @@
-"use client"
-
 import { useState, useEffect, useRef } from "react"
-import {
-  FaCloudUploadAlt,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaFileDownload,
-  FaBook,
-  FaFolderPlus,
-  FaUpload,
-  FaInfoCircle 
-} from "react-icons/fa"
+import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaFolderPlus, FaUpload, FaInfoCircle } from "react-icons/fa"
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
@@ -349,6 +338,65 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
       handleFileSelect({ target: { files: [droppedFile] } })
     }
   }
+  
+
+const handleStopProcess = async () => {
+  const result = await Swal.fire({
+    icon: "warning",
+    title: "¿Estás seguro?",
+    text: "Si detienes ahora, el proceso no se completará correctamente.",
+    showCancelButton: true,
+    confirmButtonText: "Sí, detener",
+    cancelButtonText: "No, continuar",
+    background: "#ffffff",
+    confirmButtonColor: "#dc2626", // rojo para reforzar acción peligrosa
+    cancelButtonColor: "#16a34a",  // verde para continuar
+    customClass: {
+      popup: "rounded-xl shadow-lg",
+      title: "font-bold text-lg",
+      confirmButton: "px-4 py-2 font-semibold",
+      cancelButton: "px-4 py-2 font-semibold",
+    },
+  })
+
+  if (!result.isConfirmed) {
+    // Usuario presionó "No, continuar"
+    return
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/detener-automatizacion`, {
+      method: "POST",
+    })
+    if (!response.ok) throw new Error("No se pudo detener el proceso")
+
+    await Swal.fire({
+      icon: "success",
+      title: "Proceso detenido",
+      text: "El proceso fue detenido exitosamente.",
+      confirmButtonText: "Aceptar",
+      background: "#ffffff",
+      confirmButtonColor: "#16a34a",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2",
+      },
+    })
+
+    // 🔄 Reiniciar formulario y estado
+    setIsLoading(false)
+    setProgress(0)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    resetForm()
+  } catch (error) {
+    console.error("Error al detener proceso:", error)
+    showAlert("error", "Error", "No se pudo detener el proceso. Inténtalo nuevamente.")
+  }
+}
 
   return (
     <div className={styles.certContainer}>
@@ -444,9 +492,24 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
           </div>
         </div>
 
-        <button onClick={handleUploadAndExecute} className={styles.certButton} disabled={isLoading}>
-          {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
-        </button>
+        <div className={styles.buttonRow}>
+          <button
+            onClick={handleUploadAndExecute}
+            className={styles.certButton}
+            disabled={isLoading}
+          >
+            {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
+          </button>
+
+          {isLoading && (
+            <button
+              onClick={handleStopProcess}
+              className={`${styles.certButton} ${styles.stopButton}`}
+            >
+              Detener Proceso
+            </button>
+          )}
+        </div>
 
         {isLoading && (
           <div className={styles.progressSection}>

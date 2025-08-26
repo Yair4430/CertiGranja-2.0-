@@ -418,6 +418,28 @@ body {
   color: #8b5cf6; /* Morado */
 }
 
+/* Botones en fila */
+.button-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.button-row .cert-button {
+  flex: 1;
+  width: auto; /* Evita que ocupe todo el ancho */
+}
+
+/* Botón de detener */
+.stop-button {
+  background: #dc2626; /* rojo */
+}
+
+.stop-button:hover {
+  background: #b91c1c;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

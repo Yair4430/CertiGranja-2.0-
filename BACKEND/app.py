@@ -24,12 +24,12 @@ progreso = {
 
 # Modulos de la Version 1 
 from V1.leerEXCEL import leer_excel
-from V1.navegacion import automatizar_navegacion, set_progreso_callback
+from V1.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
 from V1.Plantilla import generar_plantilla
 from V1.generarResultados import generar_resultados
 
 # Modulos de la version 2
-from V2.navegacion_masivo import procesar_carpeta_principal, set_progreso_carpetas_callback
+from V2.navegacion_masivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -121,6 +121,11 @@ def iniciar_automatizacion():
 
     return jsonify({"mensaje": "Automatización iniciada en segundo plano"}), 200
 
+@app.route('/detener-automatizacion', methods=['POST'])
+def detener_automatizacion_endpoint():
+    detener_automatizacion()
+    return jsonify({"mensaje": "Automatización detenida correctamente"}), 200
+
 
 @app.route('/descargar-plantilla', methods=['GET'])
 def descargar_plantilla():
@@ -185,6 +190,10 @@ def iniciar_automatizacion_masiva():
         # Resetear filas cuando cambia de carpeta
         if not data.get("finalizado", False):
             progreso["filas"] = {"total": 0, "actual": 0, "finalizado": False}
+        # Si el proceso fue detenido, actualizar el estado
+        if data.get("detenido", False):
+            progreso["carpetas"]["finalizado"] = True
+            progreso["carpetas"]["carpeta_actual"] = "Proceso detenido por el usuario"
 
     def actualizar_progreso_filas(data):
         progreso["filas"].update(data)
@@ -193,7 +202,13 @@ def iniciar_automatizacion_masiva():
 
     def run_masivo():
         try:
-            procesar_carpeta_principal(ruta_principal, actualizar_progreso_filas)
+            exito = procesar_carpeta_principal(ruta_principal, actualizar_progreso_filas)
+            if not exito:
+                progreso["carpetas"].update({
+                    "finalizado": True, 
+                    "carpeta_actual": "Proceso detenido por el usuario",
+                    "detenido": True
+                })
         except Exception as e:
             logging.error(f"Error en automatización masiva: {e}")
             progreso["carpetas"].update({
@@ -201,10 +216,19 @@ def iniciar_automatizacion_masiva():
                 "error": str(e),
                 "carpeta_actual": "Error en el proceso"
             })
-
+            
     threading.Thread(target=run_masivo, daemon=True).start()
 
     return jsonify({"mensaje": "Automatización masiva iniciada en segundo plano"}), 200
+
+@app.route('/detener-automatizacion-masiva', methods=['POST'])
+def detener_automatizacion_masiva_endpoint():
+    """Detiene la automatización masiva en curso"""
+    try:
+        detener_automatizacion_masiva()
+        return jsonify({"mensaje": "Automatización masiva detenida correctamente"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al detener automatización masiva: {str(e)}"}), 500
 
 if __name__ == '__main__':
     logging.info("Servidor iniciado en http://127.0.0.1:50400")

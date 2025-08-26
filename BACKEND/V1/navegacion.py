@@ -22,6 +22,13 @@ load_dotenv()
 # --- NUEVO: callback para progreso ---
 progreso_callback = None
 
+detener_proceso = False
+
+def detener_automatizacion():
+    """Permite detener el proceso desde fuera (ej: Flask)."""
+    global detener_proceso
+    detener_proceso = True
+
 def set_progreso_callback(callback):
     """Permite que app.py registre un callback para actualizar el progreso"""
     global progreso_callback
@@ -68,8 +75,16 @@ def automatizar_navegacion(datos, carpeta_destino=None):
         # Abrir navegador en pantalla completa
         driver.maximize_window()
         driver.get(url)
+
+        global detener_proceso
+        detener_proceso = False
         
         while fila_actual < total_filas:
+            
+            if detener_proceso:
+                print("⚠️ Proceso detenido manualmente por el usuario")
+                break
+
             try:
                 row = datos.iloc[fila_actual]
                 tipo_documento = str(row["TIPO DE DOCUMENTO"]).strip().upper()

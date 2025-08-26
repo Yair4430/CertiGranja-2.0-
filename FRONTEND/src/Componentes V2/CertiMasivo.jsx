@@ -239,9 +239,80 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
       showAlert("error", "Error en la descarga", "Hubo un problema al descargar la plantilla. Inténtalo nuevamente.")
     }
   }
-  
-  const handleDownloadManual = () => {
-    // Implement manual download logic here
+
+    const resetForm = () => {
+    setRuta("")
+    setIsLoading(false)
+    setTotalCarpetas(0)
+    setCarpetaActualIndex(0)
+    setProgressFilas(0)
+    setCarpetaActual("")
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }
+
+  const handleStopProcess = async () => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "¿Estás seguro?",
+      text: "Si detienes ahora, el proceso no se completará correctamente.",
+      showCancelButton: true,
+      confirmButtonText: "Sí, detener",
+      cancelButtonText: "No, continuar",
+      background: "#ffffff",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#8b5cf6",
+      customClass: {
+        popup: "rounded-xl shadow-lg",
+        title: "font-bold text-lg",
+        confirmButton: "px-4 py-2 font-semibold",
+        cancelButton: "px-4 py-2 font-semibold",
+      },
+    })
+
+    if (!result.isConfirmed) return
+
+    try {
+      const response = await fetch(`${API_URL}/detener-automatizacion-masiva`, {
+        method: "POST",
+      })
+      if (!response.ok) throw new Error("No se pudo detener el proceso")
+
+      await Swal.fire({
+        icon: "success",
+        title: "Proceso detenido",
+        text: "El proceso fue detenido exitosamente.",
+        confirmButtonText: "Aceptar",
+        background: "#ffffff",
+        confirmButtonColor: "#8b5cf6",
+        customClass: {
+          popup: "rounded-xl shadow-lg",
+          title: "font-bold text-lg",
+          confirmButton: "px-4 py-2",
+        },
+      })
+
+      // 🔄 Reiniciar estados manualmente
+      setIsLoading(false)
+      setTotalCarpetas(0)
+      setCarpetaActualIndex(0)
+      setProgressFilas(0)
+      setCarpetaActual("")
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+
+      // ✅ acá simplemente llamas la función después del Swal
+      resetForm()
+
+    } catch (error) {
+      console.error("Error al detener proceso:", error)
+      showAlert("error", "Error", "No se pudo detener el proceso. Inténtalo nuevamente.")
+    }
   }
 
   return (
@@ -279,9 +350,24 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
           />
         </div>
 
-        <button onClick={handleStartProcess} className="cert-button" disabled={isLoading}>
-          {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
-        </button>
+        <div className="button-row">
+          <button
+            onClick={handleStartProcess}
+            className="cert-button"
+            disabled={isLoading}
+          >
+            {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
+          </button>
+
+          {isLoading && (
+            <button
+              onClick={handleStopProcess}
+              className="cert-button stop-button"
+            >
+              Detener Proceso
+            </button>
+          )}
+        </div>
 
         {isLoading && (
           <div className="progress-section">
