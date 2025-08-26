@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 import shutil
 from V1.leerEXCEL import leer_excel
 from V1.generarResultados import generar_resultados
-from V1.unir_certificados import unir_pdfs
 
 # Cargar las variables de entorno
 load_dotenv()
@@ -58,7 +57,13 @@ def automatizar_navegacion(datos, carpeta_destino=None):
             raise ValueError("Faltan variables de entorno en el archivo .env")
         
         service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service)
+
+        # OPCIONES DE CHROME
+        options = webdriver.ChromeOptions()
+        options.add_argument("--force-device-scale-factor=0.65")
+        options.add_argument("--high-dpi-support=0.65")
+
+        driver = webdriver.Chrome(service=service, options=options)
 
         # Abrir navegador en pantalla completa
         driver.maximize_window()
@@ -264,9 +269,6 @@ def automatizar_navegacion(datos, carpeta_destino=None):
             nombre_archivo = os.getenv("OUTPUT_FILE", "resultados_certificados.xlsx")
 
         generar_resultados(datos, resultados_df, nombre_archivo)
-        
-        if carpeta_destino:
-            unir_pdfs(carpeta_destino)
     
     # --- Finalizar progreso ---
     if progreso_callback:
