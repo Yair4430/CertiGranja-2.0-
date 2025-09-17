@@ -23,13 +23,13 @@ progreso = {
 }
 
 # Modulos de la Version 1 
-from V1.leerExcel import leer_excel
-from V1.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
-from V1.plantilla import generar_plantilla
-from V1.generarResultados import generar_resultados
+from CertiGranja.Normal.leerExcel import leer_excel
+from CertiGranja.Normal.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
+from CertiGranja.Normal.plantilla import generar_plantilla
+from CertiGranja.Normal.generarResultados import generar_resultados
 
 # Modulos de la version 2
-from V2.navegacionMasivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
+from CertiGranja.Masivo.navegacionMasivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
 
 logging.basicConfig(level=logging.DEBUG)
 

@@ -7,8 +7,8 @@ import pandas as pd
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-from V1.leerExcel import leer_excel
-from V1.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
+from Normal.leerExcel import leer_excel
+from Normal.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
 
 progreso_carpetas_callback = None
 detener_proceso_masivo = False
