@@ -129,22 +129,42 @@ def detener_automatizacion_endpoint():
 
 @app.route('/descargar-plantilla', methods=['GET'])
 def descargar_plantilla():
+    ruta_plantilla = None
     try:
-        generar_plantilla()
-        archivo = "plantilla.xlsx"
-
-        if not os.path.exists(archivo):
+        # Generar plantilla temporal
+        ruta_plantilla = generar_plantilla()
+        
+        if not os.path.exists(ruta_plantilla):
             return jsonify({"error": "No se pudo generar la plantilla"}), 500
 
-        return send_file(
-            archivo,
+        # Enviar el archivo y luego eliminarlo
+        response = send_file(
+            ruta_plantilla,
             as_attachment=True,
             download_name="plantilla.xlsx",
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+        
+        # Eliminar el archivo después de enviarlo
+        @response.call_on_close
+        def remove_file():
+            try:
+                if os.path.exists(ruta_plantilla):
+                    os.remove(ruta_plantilla)
+                    print(f"Archivo temporal eliminado: {ruta_plantilla}")
+            except Exception as e:
+                print(f"Error eliminando archivo temporal: {e}")
+        
+        return response
+        
     except Exception as e:
+        # Limpiar en caso de error
+        if ruta_plantilla and os.path.exists(ruta_plantilla):
+            try:
+                os.remove(ruta_plantilla)
+            except:
+                pass
         return jsonify({"error": f"Error generando plantilla: {str(e)}"}), 500
-
 
 @app.route('/descargar-resultados', methods=['GET'])
 def descargar_resultados():

@@ -2,6 +2,8 @@ import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from datetime import datetime
+import os
+import tempfile
 
 def generar_plantilla():
     # Crear la plantilla
@@ -15,17 +17,19 @@ def generar_plantilla():
     }
     df = pd.DataFrame(data)
 
-    # Guardar la plantilla en un archivo Excel
-    nombre_archivo = 'plantilla.xlsx'
+    # Crear archivo temporal
+    with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as tmp:
+        nombre_archivo = tmp.name
+    
+    # Guardar la plantilla en el archivo temporal
     df.to_excel(nombre_archivo, index=False, engine='openpyxl')
     
-    # Ajustar el ancho de las columnas
+    # Ajustar el ancho de las columnas y agregar validaciones
     ajustar_ancho(nombre_archivo)
-    
-    # Agregar validación de datos (lista desplegable)
     agregar_validacion_datos(nombre_archivo)
     
-    print("Se ha generado la plantilla: plantilla.xlsx")
+    print(f"Plantilla generada temporalmente en: {nombre_archivo}")
+    return nombre_archivo
 
 def ajustar_ancho(nombre_archivo):
     # Abrir el archivo Excel para ajustar el ancho de las columnas
