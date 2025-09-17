@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from Normal.plantilla import ajustar_ancho
+from .plantilla import ajustar_ancho
 import shutil
 
 # Carpeta de descargas por defecto

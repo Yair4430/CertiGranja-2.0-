@@ -13,8 +13,8 @@ import os
 import glob
 from dotenv import load_dotenv
 import shutil
-from Normal.leerExcel import leer_excel
-from Normal.generarResultados import generar_resultados
+from .leerExcel import leer_excel  # Importación relativa
+from .generarResultados import generar_resultados
 
 # Cargar las variables de entorno
 load_dotenv()

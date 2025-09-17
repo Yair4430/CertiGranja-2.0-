@@ -7,6 +7,11 @@ from waitress import serve
 import logging
 from pathlib import Path
 import threading
+import sys
+import os
+
+# Agregar el directorio Normal al path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'CertiGranja', 'Normal'))
 
 progreso = {
     "carpetas": {
