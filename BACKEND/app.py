@@ -23,13 +23,13 @@ progreso = {
 }
 
 # Modulos de la Version 1 
-from V1.leerEXCEL import leer_excel
+from V1.leerExcel import leer_excel
 from V1.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
-from V1.Plantilla import generar_plantilla
+from V1.plantilla import generar_plantilla
 from V1.generarResultados import generar_resultados
 
 # Modulos de la version 2
-from V2.navegacion_masivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
+from V2.navegacionMasivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
 
 logging.basicConfig(level=logging.DEBUG)
 

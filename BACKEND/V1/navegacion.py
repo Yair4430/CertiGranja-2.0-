@@ -13,7 +13,7 @@ import os
 import glob
 from dotenv import load_dotenv
 import shutil
-from V1.leerEXCEL import leer_excel
+from V1.leerExcel import leer_excel
 from V1.generarResultados import generar_resultados
 
 # Cargar las variables de entorno
