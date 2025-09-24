@@ -1,24 +1,10 @@
 import pandas as pd
 
+#Valida que el archivo Excel tenga la estructura correcta de la plantilla
 def validar_plantilla(datos):
-    """
-    Valida que el archivo Excel tenga la estructura correcta de la plantilla
-    
-    Args:
-        datos (DataFrame): DataFrame con los datos del Excel
-        
-    Returns:
-        tuple: (es_valido, mensaje_error)
-    """
+
     # Columnas esperadas en la plantilla
-    columnas_esperadas = [
-        'TIPO DE DOCUMENTO',
-        'NUMERO DE DOCUMENTO', 
-        'NOMBRES Y APELLIDOS',
-        'DIA',
-        'MES',
-        'AÑO'
-    ]
+    columnas_esperadas = ['TIPO DE DOCUMENTO', 'NUMERO DE DOCUMENTO', 'NOMBRES Y APELLIDOS', 'DIA', 'MES', 'AÑO']
     
     # Verificar que el DataFrame no esté vacío
     if datos.empty:
@@ -59,8 +45,7 @@ def validar_plantilla(datos):
             errores_contenido.append(f"Fila {idx+2}: Día '{dia}' debe ser un número")
     
     # Verificar meses válidos
-    meses_validos = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
-                     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
+    meses_validos = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
     for idx, mes in enumerate(datos['MES'].dropna()):
         if str(mes).strip().upper() not in meses_validos:
             errores_contenido.append(f"Fila {idx+2}: Mes inválido '{mes}'. Debe ser uno de: {', '.join(meses_validos)}")

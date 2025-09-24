@@ -1,11 +1,10 @@
-import os
-import sys
+import os, sys
 from pathlib import Path
 
 def crear_carpeta_en_descargas(nombre_carpeta):
+
     # Obtener la carpeta de Descargas del usuario
     carpeta_descargas = str(Path.home() / "Downloads")
-
     # Ruta completa de la nueva carpeta
     ruta_carpeta = os.path.join(carpeta_descargas, nombre_carpeta)
 

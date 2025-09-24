@@ -1,27 +1,23 @@
 from selenium import webdriver
+from dotenv import load_dotenv
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import UnexpectedAlertPresentException, TimeoutException, WebDriverException
 from webdriver_manager.chrome import ChromeDriverManager
-import time
-import traceback
+import time, traceback, os, glob, shutil
 import pandas as pd
-import os
-import glob
-from dotenv import load_dotenv
-import shutil
-from .leerExcel import leer_excel  # Importación relativa
+
+#Importacion de los componentes
+from .leerExcel import leer_excel  
 from .generarResultados import generar_resultados
 
 # Cargar las variables de entorno
 load_dotenv()
 
-# --- NUEVO: callback para progreso ---
+# Callback para progreso 
 progreso_callback = None
-
 detener_proceso = False
 
 def detener_automatizacion():
@@ -34,14 +30,14 @@ def set_progreso_callback(callback):
     global progreso_callback
     progreso_callback = callback
 
-def obtener_enlace_tipo_documento(tipo_documento):
+def obtener_enlace_tipo_documento(tipo_documento: str) -> str:
     """
-    Retorna el enlace correspondiente según el tipo de documento
+    Retorna el enlace correspondiente según el tipo de documento desde variables de entorno
     """
     enlaces = {
-        "TI": "https://consultasrc.registraduria.gov.co/ProyectoSCCRC/faces/index.xhtml",
-        "CE": "https://apps.migracioncolombia.gov.co/consultaCedulas/pages/home.jsf - victor.echeverry@cancilleria.gov.co",
-        "PPT": "https://apps.migracioncolombia.gov.co:8443/consultappt/"
+        "TI": os.getenv("URL_TI"),
+        "CE": os.getenv("URL_CE"),
+        "PPT": os.getenv("URL_PPT")
     }
     return enlaces.get(tipo_documento, "")
 
@@ -53,7 +49,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
     total_filas = len(datos)
     fila_actual = 0
 
-    # --- Inicializar progreso ---
+    # Inicializar progreso
     if progreso_callback:
         progreso_callback({"total": total_filas, "actual": 0, "finalizado": False})
 
@@ -99,13 +95,9 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                     })
                     fila_actual += 1
 
-                    # --- Actualizar progreso ---
+                    # Actualizar progreso
                     if progreso_callback:
-                        progreso_callback({
-                            "total": total_filas,
-                            "actual": fila_actual,
-                            "finalizado": False
-                        })
+                        progreso_callback({"total": total_filas, "actual": fila_actual, "finalizado": False})
                     continue
                 
                 driver.get(url)
@@ -123,11 +115,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                     fila_actual += 1
 
                     if progreso_callback:
-                        progreso_callback({
-                            "total": total_filas,
-                            "actual": fila_actual,
-                            "finalizado": False
-                        })
+                        progreso_callback({"total": total_filas, "actual": fila_actual, "finalizado": False})
                     continue
                 except TimeoutException:
                     pass  # No se encontró el mensaje, continuar con el proceso normal
@@ -179,11 +167,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                         })
                         fila_actual += 1
                         if progreso_callback:
-                            progreso_callback({
-                                "total": total_filas,
-                                "actual": fila_actual,
-                                "finalizado": False
-                            })
+                            progreso_callback({"total": total_filas, "actual": fila_actual, "finalizado": False})
                         continue
                     
                     if "CAPTCHA" in mensaje_error:
@@ -252,13 +236,9 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                 
                 fila_actual += 1
 
-                # --- Actualizar progreso ---
+                # Actualizar progreso
                 if progreso_callback:
-                    progreso_callback({
-                        "total": total_filas,
-                        "actual": fila_actual,
-                        "finalizado": False
-                    })
+                    progreso_callback({"total": total_filas, "actual": fila_actual, "finalizado": False})
                 
             except WebDriverException as e:
                 print("Automatización completada con éxito.")
@@ -273,7 +253,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
             time.sleep(1)
             driver.quit()
         
-        # --- Guardar resultados ---
+        # Guardar resultados
         resultados_df = pd.DataFrame(resultados)
 
         if carpeta_destino:
@@ -285,7 +265,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
 
         generar_resultados(datos, resultados_df, nombre_archivo)
     
-    # --- Finalizar progreso ---
+    # Finalizar progreso 
     if progreso_callback:
         progreso_callback({"total": total_filas, "actual": total_filas, "finalizado": True})
 

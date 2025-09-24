@@ -1,15 +1,13 @@
-import os
+import os, shutil
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from .plantilla import ajustar_ancho
-import shutil
 
 # Carpeta de descargas por defecto
 ruta_carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
 
 def generar_resultados(datos, resultados_df, nombre_archivo_salida="resultados_certificados.xlsx", carpeta_destino=ruta_carpeta_descargas):
-    # Cambia 'resultados' por 'resultados_df'
     if isinstance(resultados_df, list):
         resultados_df = pd.DataFrame(resultados_df)
     if resultados_df.empty:
@@ -22,7 +20,7 @@ def generar_resultados(datos, resultados_df, nombre_archivo_salida="resultados_c
         print("Error: No se puede encontrar la carpeta de Descargas.")
         return
 
-    # Ruta general de salida (ya no por ficha)
+    # Ruta general de salida 
     ruta_archivo_salida = os.path.join(downloads_folder, nombre_archivo_salida)
 
     # Agregar columna de observaciones directamente al DataFrame completo
@@ -84,7 +82,7 @@ def generar_resultados(datos, resultados_df, nombre_archivo_salida="resultados_c
                 for col in range(1, ws.max_column + 1):
                     ws.cell(row=excel_row, column=col).fill = fill_color
         
-        # NUEVO: Encontrar y eliminar la columna STATUS
+        # Encontrar y eliminar la columna STATUS
         status_column = None
         for col in range(1, ws.max_column + 1):
             if ws.cell(row=1, column=col).value == "STATUS":

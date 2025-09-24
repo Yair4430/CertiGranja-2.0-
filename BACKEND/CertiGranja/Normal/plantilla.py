@@ -1,20 +1,12 @@
 import pandas as pd
+import tempfile
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from datetime import datetime
-import os
-import tempfile
 
 def generar_plantilla():
     # Crear la plantilla
-    data = {
-        'TIPO DE DOCUMENTO': [],
-        'NUMERO DE DOCUMENTO': [],
-        'NOMBRES Y APELLIDOS': [],
-        'DIA': [],
-        'MES': [],
-        'AÑO': []
-    }
+    data = { 'TIPO DE DOCUMENTO': [], 'NUMERO DE DOCUMENTO': [], 'NOMBRES Y APELLIDOS': [], 'DIA': [], 'MES': [], 'AÑO': [] }
     df = pd.DataFrame(data)
 
     # Crear archivo temporal

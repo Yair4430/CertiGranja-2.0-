@@ -1,43 +1,29 @@
-import base64
+# ----------------------------- CERTIGRANJA ------------------------------------------------
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import pandas as pd
-import os
 from waitress import serve
-import logging
 from pathlib import Path
-import threading
-import sys
-import os
+import pandas as pd
+import os, logging, threading, sys
 
 # Agregar el directorio Normal al path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'CertiGranja', 'Normal'))
 
 progreso = {
-    "carpetas": {
-        "total": 0, 
-        "actual": 0, 
-        "finalizado": False,
-        "carpeta_actual": ""
-    },
-    "filas": {
-        "total": 0, 
-        "actual": 0, 
-        "finalizado": False
-    },
+    "carpetas": { "total": 0, "actual": 0, "finalizado": False,"carpeta_actual": ""},
+    "filas": {"total": 0, "actual": 0, "finalizado": False},
 }
 
-# Modulos de la Version 1 
+# Modulos de la carpeta Normal 
 from CertiGranja.Normal.leerExcel import leer_excel
 from CertiGranja.Normal.navegacion import automatizar_navegacion, set_progreso_callback, detener_automatizacion
 from CertiGranja.Normal.plantilla import generar_plantilla
 from CertiGranja.Normal.generarResultados import generar_resultados
 
-# Modulos de la version 2
+# Modulos de la carpeta Masivo
 from CertiGranja.Masivo.navegacionMasivo import procesar_carpeta_principal, set_progreso_carpetas_callback, detener_automatizacion_masiva
 
 logging.basicConfig(level=logging.DEBUG)
-
 ruta_carpeta_descargas = None
 
 app = Flask(__name__)
@@ -46,12 +32,10 @@ CORS(app)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
 @app.route('/progreso', methods=['GET'])
 def obtener_progreso():
     """Devuelve el estado de progreso (carpetas y filas)."""
     return jsonify(progreso)
-
 
 @app.route('/crear-carpeta-descargas', methods=['POST'])
 def crear_carpeta_en_descargas():
@@ -202,12 +186,7 @@ def iniciar_automatizacion_masiva():
     except Exception as e:
         return jsonify({"error": f"Error accediendo a la ruta: {str(e)}"}), 400
 
-    progreso["carpetas"] = {
-        "total": len(subcarpetas), 
-        "actual": 0, 
-        "finalizado": False,
-        "carpeta_actual": "Iniciando proceso..."
-    }
+    progreso["carpetas"] = {"total": len(subcarpetas), "actual": 0, "finalizado": False,"carpeta_actual": "Iniciando proceso..."}
     progreso["filas"] = {"total": 0, "actual": 0, "finalizado": False}
 
     def actualizar_progreso_carpetas(data):
@@ -229,18 +208,10 @@ def iniciar_automatizacion_masiva():
         try:
             exito = procesar_carpeta_principal(ruta_principal, actualizar_progreso_filas)
             if not exito:
-                progreso["carpetas"].update({
-                    "finalizado": True, 
-                    "carpeta_actual": "Proceso detenido por el usuario",
-                    "detenido": True
-                })
+                progreso["carpetas"].update({"finalizado": True, "carpeta_actual": "Proceso detenido por el usuario","detenido": True})
         except Exception as e:
             logging.error(f"Error en automatización masiva: {e}")
-            progreso["carpetas"].update({
-                "finalizado": True, 
-                "error": str(e),
-                "carpeta_actual": "Error en el proceso"
-            })
+            progreso["carpetas"].update({"finalizado": True, "error": str(e),"carpeta_actual": "Error en el proceso"})
             
     threading.Thread(target=run_masivo, daemon=True).start()
 
@@ -254,6 +225,8 @@ def detener_automatizacion_masiva_endpoint():
         return jsonify({"mensaje": "Automatización masiva detenida correctamente"}), 200
     except Exception as e:
         return jsonify({"error": f"Error al detener automatización masiva: {str(e)}"}), 500
+
+#------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     logging.info("Servidor iniciado en http://127.0.0.1:50400")
