@@ -1,5 +1,5 @@
 import { useState } from "react"
-import Central from "./CertiGranja/Central"
+import Central from "./CertiGranja/central"
 
 function App() {
   return (

@@ -3,8 +3,8 @@ import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, 
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
-import styles from "./CertiNormal.module.css"
-import InfoModal from "./InfoModalNormal"
+import styles from "./certiNormal.module.css"
+import InfoModal from "./infoModalNormal"
 
 const API_URL = import.meta.env?.VITE_API_URL
 

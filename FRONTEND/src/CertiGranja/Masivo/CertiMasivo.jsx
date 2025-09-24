@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react"
 import { FaFileDownload, FaInfoCircle, FaFolderPlus, FaFolder, FaFileAlt } from "react-icons/fa"
 import Swal from "sweetalert2"
-import InfoModalMasivo from "./InfoModalMasivo"
+import InfoModalMasivo from "./infoModalMasivo"
 import "sweetalert2/dist/sweetalert2.min.css"
-import "./CertiMasivo.css"
+import "./certiMasivo.css"
 
 const API_URL = import.meta.env?.VITE_API_URL
 

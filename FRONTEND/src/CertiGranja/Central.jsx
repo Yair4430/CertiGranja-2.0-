@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import CertiNormal from "./Normal/CertiNormal"
+import CertiNormal from "./Normal/certiNormal"
 import CertiMasivo from "./Masivo/CertiMasivo"
-import "./Central.css"
+import "./central.css"
 
 function Central() {
   // ESTADOS PRINCIPALES: Controlan el modo de operación y el estado de carga

@@ -1,5 +1,5 @@
 import { FaInfoCircle, FaTimes, FaFolder, FaPlay, FaDatabase, FaRobot, FaFilePdf, FaBook } from "react-icons/fa"
-import styles from "./InfoModalMasivo.module.css"
+import styles from "./infoModalMasivo.module.css"
 
 // Componente modal que muestra información detallada sobre el proceso masivo
 export default function InfoModalMasivo({ isOpen, onClose }) {

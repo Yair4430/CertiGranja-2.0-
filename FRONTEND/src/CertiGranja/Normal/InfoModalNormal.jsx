@@ -1,5 +1,5 @@
 import { FaInfoCircle, FaTimes, FaPlay, FaDatabase, FaRobot, FaFilePdf, FaBook } from "react-icons/fa"
-import styles from "./InfoModalNormal.module.css"
+import styles from "./infoModalNormal.module.css"
 
 export default function InfoModal({ isOpen, onClose }) {
   if (!isOpen) return null
