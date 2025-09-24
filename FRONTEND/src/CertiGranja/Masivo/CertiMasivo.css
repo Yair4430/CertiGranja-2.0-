@@ -1,0 +1,447 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f8fafc;
+  color: #1f2937;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ===== Container ===== */
+.cert-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  width: 100%;
+  padding: 24px;
+}
+
+/* ===== Header ===== */
+.cert-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.cert-logo {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+.cert-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #8b5cf6; /* Morado */
+}
+
+.cert-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* ===== Sections ===== */
+.cert-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.action-section {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+/* ===== Downloads ===== */
+.download-container {
+  display: flex;
+  gap: 16px;
+}
+
+.download-icon-inline {
+  font-size: 28px;
+  color: #8b5cf6; /* Morado */
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.download-icon-inline:hover {
+  transform: scale(1.1);
+  color: #7c3aed; /* Morado oscuro */
+}
+
+/* ===== Inputs ===== */
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-ruta {
+  padding: 10px;
+  width: 100%; /* se adapta al contenedor */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.input-ruta:focus {
+  border-color: #8b5cf6; /* Morado */
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.4); /* Morado */
+}
+
+/* ===== Título y subtítulo del input ===== */
+.input-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.input-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+/* ===== File Upload ===== */
+.upload-section {
+  display: flex;
+  justify-content: center;
+}
+
+.file-uploader {
+  border: 2px dashed #8b5cf6; /* Morado */
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  background: #ffffff;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.file-uploader:hover {
+  border-color: #7c3aed; /* Morado oscuro */
+  background: #f3e8ff; /* Morado claro */
+}
+
+.upload-icon {
+  font-size: 40px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.upload-icon.success {
+  color: #8b5cf6; /* Morado */
+}
+
+.upload-icon.error {
+  color: #dc2626;
+}
+
+.upload-text {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.upload-subtext {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.status-indicator {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #8b5cf6; /* Morado */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator.error {
+  color: #dc2626;
+}
+
+.file-input {
+  display: none;
+}
+
+/* ===== Button ===== */
+.cert-button {
+  background: #8b5cf6; /* Morado */
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  width: 100%;
+  margin-bottom: -10px; /* Reduciendo margen de 16px a 8px para menor separación */
+}
+
+.cert-button:hover {
+  background: #7c3aed; /* Morado oscuro */
+  transform: scale(1.02);
+}
+
+.cert-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Progress Bar MEJORADA ===== */
+/* Aplicando estilos mejorados de CertiNormal con colores azules */
+.progress-section {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 22px; /* Aumentado de 18px a 22px como en CertiNormal */
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 12px; /* Aumentado de 10px a 12px */
+  overflow: hidden;
+  background: #e5e7eb; /* gris claro */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra interna añadida */
+}
+
+/* Estilo de la barra en navegadores Webkit (Chrome, Edge, Safari) */
+.progress-bar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 12px;
+}
+
+.progress-bar::-webkit-progress-value {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa); /* Gradiente morado mejorado */
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out; /* Transición suave añadida */
+}
+
+/* Estilo para Firefox */
+.progress-bar::-moz-progress-bar {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out; /* Transición suave añadida */
+}
+
+.progress-percentage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: #fff; /* Texto blanco centrado */
+  line-height: 22px; /* Ajustado a la nueva altura */
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #8b5cf6; /* Morado */
+}
+
+/* ===== Spinner ===== */
+.spinner {
+  margin: 14px auto;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #8b5cf6; /* Morado */
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+/* Contenedor de los íconos */
+.resources-icons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+/* Íconos */
+.download-icon-inline {
+  font-size: 40px;
+  color: #8b5cf6; /* Morado */
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.download-icon-inline:hover {
+  transform: scale(1.2);
+  color: #7c3aed; /* Morado oscuro */
+}
+
+/* Íconos de carpeta y carga */
+.folder-icon,
+.upload-icon {
+  font-size: 25px;
+  color: #8b5cf6; /* Morado */
+}
+
+/* Ícono grande dentro del uploader */
+.upload-icon-large {
+  font-size: 50px;
+  color: #8b5cf6; /* Morado */
+  margin-bottom: 10px;
+}
+
+.file-uploader.drag-over {
+  border-color: #7c3aed; /* Morado oscuro */
+  background-color: #f3e8ff; /* Morado claro */
+  transform: scale(1.02);
+}
+
+/* === Configuración de Carpeta === */
+.folder-config {
+  border: 1px solid #e5e7eb;
+  width: 340px; /* se adapta al contenedor */
+  border-radius: 12px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.folder-icon {
+  font-size: 22px;
+  color: #8b5cf6; /* Morado */
+}
+
+.folder-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.folder-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.folder-input:focus {
+  border-color: #8b5cf6; /* Morado */
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.4); /* Morado */
+}
+
+/* ===== Tarjetas de progreso ===== */
+.progress-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px; /* Reduciendo margen de 16px a 8px para menor separación */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 340px; /* Aplicando el mismo ancho que folder-config */
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.progress-icon {
+  font-size: 20px;
+  color: #8b5cf6; /* Morado */
+}
+
+.progress-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #8b5cf6; /* Morado */
+}
+
+.current-folder {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #8b5cf6; /* Morado */
+}
+
+/* Botones en fila */
+.button-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.button-row .cert-button {
+  flex: 1;
+  width: auto; /* Evita que ocupe todo el ancho */
+}
+
+/* Botón de detener */
+.stop-button {
+  background: #dc2626; /* rojo */
+}
+
+.stop-button:hover {
+  background: #b91c1c;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

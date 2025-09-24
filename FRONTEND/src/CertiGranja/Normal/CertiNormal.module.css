@@ -1,0 +1,381 @@
+/* ===== Component-specific styles (no global reset) ===== */
+.certContainer {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  width: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+/* ===== Header ===== */
+.certHeader {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.certLogo {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+.certTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #16a34a;
+  margin: 0;
+}
+
+.certSubtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ===== Sections ===== */
+.certContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.actionSection {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+/* ===== Downloads ===== */
+.downloadContainer {
+  display: flex;
+  gap: 16px;
+}
+
+.downloadIconInline {
+  font-size: 28px;
+  color: #16a34a;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.downloadIconInline:hover {
+  transform: scale(1.1);
+  color: #15803d;
+}
+
+/* ===== Inputs ===== */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputCarpeta {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.inputCarpeta:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
+}
+
+/* ===== File Upload ===== */
+.uploadSection {
+  display: flex;
+  justify-content: center;
+}
+
+.fileUploader {
+  border: 2px dashed #16a34a;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  background: #ffffff;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.fileUploader:hover {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.fileUploader.dragOver {
+  border-color: #15803d;
+  background-color: #f0fdf4;
+  transform: scale(1.02);
+}
+
+.fileUploader.uploaded {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.fileUploader.error {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.uploadIcon {
+  font-size: 40px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.uploadIcon.success {
+  color: #16a34a;
+}
+
+.uploadIcon.error {
+  color: #dc2626;
+}
+
+.uploadText {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.uploadSubtext {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.statusIndicator {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.statusIndicator.error {
+  color: #dc2626;
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ===== Button ===== */
+.certButton {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  width: 100%;
+  font-family: inherit;
+  margin-bottom: -10px; /* Reduciendo margen de 16px a 8px para menor separación */
+}
+
+.certButton:hover {
+  background: #15803d;
+  transform: scale(1.02);
+}
+
+.certButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Progress Bar ===== */
+/* Barra de progreso */
+.progressSection {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progressBarContainer {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.progressBar {
+  width: 100%;
+  height: 22px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5e7eb; /* gris claro */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo de la barra en navegadores Webkit (Chrome, Edge, Safari) */
+.progressBar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 12px;
+}
+
+.progressBar::-webkit-progress-value {
+  background: linear-gradient(90deg, #16a34a, #4ade80); /* verde degradado */
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out;
+}
+
+/* Estilo para Firefox */
+.progressBar::-moz-progress-bar {
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out;
+}
+
+.progressText {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: #fff;
+  line-height: 22px;
+}
+
+/* ===== Progress Bar ===== */
+/* Barra de progreso */
+.progressSection {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Agregando estilos para progress-card como en CertiMasivo */
+.progressCard {
+  width: 340px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progressIcon {
+  font-size: 18px;
+  color: #16a34a;
+}
+
+.progressLabel {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.progressBarContainer {
+  width: 100%;
+  position: relative;
+}
+
+/* ===== Spinner ===== */
+.spinner {
+  margin: 14px auto;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #16a34a;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+/* Contenedor de los íconos */
+.resourcesIcons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+/* Estilo de los íconos */
+.downloadIconInline {
+  font-size: 40px;
+  color: #16a34a;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.downloadIconInline:hover {
+  transform: scale(1.2);
+  color: #15803d;
+}
+
+/* ===== Estilo para íconos de carpeta y carga ===== */
+.folderIcon,
+.uploadIcon {
+  font-size: 25px;
+  color: #16a34a;
+}
+
+/* ===== Estilo para íconos de carga (dentro del uploader) ===== */
+.uploadIconLarge {
+  font-size: 50px;
+  color: #16a34a;
+  margin-bottom: 10px;
+}
+
+
+/* Contenedor de botones en fila */
+.buttonRow {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Ajustar ancho de botones cuando hay dos */
+.buttonRow .certButton {
+  flex: 1;
+  width: auto; /* evita ocupar todo el ancho */
+}
+
+/* Estilo del botón de detener */
+.stopButton {
+  background: #dc2626; /* rojo */
+}
+
+.stopButton:hover {
+  background: #b91c1c;
+}
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
