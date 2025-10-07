@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { FaFileDownload, FaInfoCircle, FaFolderPlus, FaFolder, FaFileAlt } from "react-icons/fa"
+import { FaFileDownload, FaInfoCircle, FaFolderOpen, FaFolder, FaFileAlt } from "react-icons/fa"
 import Swal from "sweetalert2"
 import InfoModalMasivo from "./infoModalMasivo"
 import "sweetalert2/dist/sweetalert2.min.css"
@@ -338,7 +338,7 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
         {/* Sección de configuración de carpeta */}
         <div className="folder-config">
           <div className="folder-header">
-            <FaFolderPlus className="folder-icon" />
+            <FaFolderOpen className="folder-icon" />
             <h2 className="folder-title">Ruta de la carpeta principal</h2>
           </div>
           <input type="text" value={ruta} onChange={(e) => setRuta(e.target.value)} className="folder-input" placeholder="Ingresa la ruta de la carpeta" disabled={isLoading} />

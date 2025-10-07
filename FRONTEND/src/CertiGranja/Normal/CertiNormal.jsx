@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaFolderPlus, FaUpload, FaInfoCircle } from "react-icons/fa"
+import {FaCloudUploadAlt, FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaFolderOpen, FaUpload, FaInfoCircle } from "react-icons/fa"
 import * as XLSX from "xlsx"
 import Swal from "sweetalert2"
 import "sweetalert2/dist/sweetalert2.min.css"
@@ -418,7 +418,7 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
         {/* Sección de configuración de carpeta */}
         <div className={styles.actionSection}>
           <h2 className={styles.sectionTitle}>
-            <FaFolderPlus className={styles.folderIcon} />
+            <FaFolderOpen className={styles.folderIcon} />
             Nombre de la Carpeta
           </h2>
           <div className={styles.folderSection}>
