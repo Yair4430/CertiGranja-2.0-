@@ -30,16 +30,29 @@ def set_progreso_callback(callback):
     global progreso_callback
     progreso_callback = callback
 
-def obtener_enlace_tipo_documento(tipo_documento: str) -> str:
+def obtener_enlace_tipo_documento(tipo_documento: str) -> dict:
     """
-    Retorna el enlace correspondiente según el tipo de documento desde variables de entorno
+    Retorna los enlaces correspondientes según el tipo de documento desde variables de entorno
+    Para PPT retorna ambas opciones
     """
     enlaces = {
-        "TI": os.getenv("URL_TI"),
-        "CE": os.getenv("URL_CE"),
-        "PPT": os.getenv("URL_PPT")
+        "TI": {
+            "nombre": "Tarjeta de Identidad",
+            "enlaces": [os.getenv("URL_TI")]
+        },
+        "CE": {
+            "nombre": "Cédula de Extranjería",
+            "enlaces": [os.getenv("URL_CE")]
+        },
+        "PPT": {
+            "nombre": "Permiso Por Protección Temporal",
+            "enlaces": [
+                os.getenv("URL_PPT_OPC1"),
+                os.getenv("URL_PPT_OPC2")
+            ]
+        }
     }
-    return enlaces.get(tipo_documento, "")
+    return enlaces.get(tipo_documento, {"nombre": tipo_documento, "enlaces": []})
 
 def automatizar_navegacion(datos, carpeta_destino=None):
     global progreso_callback
@@ -87,12 +100,24 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                 
                 # Verificar si es un tipo de documento especial (CE, PPT, TI)
                 if tipo_documento in ["CE", "PPT", "TI"]:
-                    enlace = obtener_enlace_tipo_documento(tipo_documento)
-                    print(f"Fila {fila_actual + 1}: Tipo de documento {tipo_documento} - Agregando enlace especial")
-                    resultados.append({
-                        "STATUS": "ENLACE_ESPECIAL",
-                        "OBSERVACIONES": f"Este tipo de certificado ({tipo_documento}) se genera en: {enlace}"
-                    })
+                    info_documento = obtener_enlace_tipo_documento(tipo_documento)
+                    nombre_documento = info_documento["nombre"]
+                    enlaces = info_documento["enlaces"]
+                    
+                    if tipo_documento == "PPT":
+                        print(f"Fila {fila_actual + 1}: Tipo de documento {tipo_documento} - Agregando ambas opciones de PPT")
+                        enlaces_texto = " | ".join([f"Opción {i+1}: {enlace}" for i, enlace in enumerate(enlaces)])
+                        resultados.append({
+                            "STATUS": "ENLACE_ESPECIAL",
+                            "OBSERVACIONES": f"PPT - {nombre_documento}. Enlaces disponibles para descargar el certificado de vigencia: {enlaces_texto}"
+                        })
+                    else:
+                        print(f"Fila {fila_actual + 1}: Tipo de documento {tipo_documento} - Agregando enlace especial")
+                        resultados.append({
+                            "STATUS": "ENLACE_ESPECIAL",
+                            "OBSERVACIONES": f"{tipo_documento} - {nombre_documento}. Enlace disponible para descargar el certificado de vigencia: {enlaces[0]}"
+                        })
+                    
                     fila_actual += 1
 
                     # Actualizar progreso
