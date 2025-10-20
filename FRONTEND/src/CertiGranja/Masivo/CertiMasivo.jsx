@@ -36,6 +36,17 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
 
   const intervalRef = useRef(null)
 
+  // Función para validar si el formulario está completo
+  const isFormValid = () => {
+    if (!ruta.trim()) return false
+    
+    // Validación de formato de ruta (Windows y Unix)
+    const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
+    const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
+
+    return windowsPathRegex.test(ruta) || unixPathRegex.test(ruta)
+  }
+
   // Efecto para manejar la prevención de cierre durante procesos activos
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -107,45 +118,6 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
   // Función principal para iniciar el proceso de automatización
   const handleStartProcess = async () => {
     if (!verificarConexion()) return
-    
-    // Validaciones de entrada de ruta
-    if (!ruta.trim()) {
-      Swal.fire({
-        icon: "warning",
-        title: "Ruta no ingresada",
-        text: "Por favor ingresa una ruta antes de continuar.",
-        confirmButtonText: "Aceptar",
-        background: "#ffffff",
-        confirmButtonColor: "#8b5cf6",
-        customClass: {
-          popup: "rounded-xl shadow-lg",
-          title: "font-bold text-lg",
-          confirmButton: "px-4 py-2",
-        },
-      }).then(() => setRuta(""))
-      return
-    }
-
-    // Validación de formato de ruta (Windows y Unix)
-    const windowsPathRegex = /^[a-zA-Z]:(\\[^<>:"/\\|?*]+)+\\?$/
-    const unixPathRegex = /^(\/[^<>:"/\\|?*]+)+\/?$/
-
-    if (!windowsPathRegex.test(ruta) && !unixPathRegex.test(ruta)) {
-      Swal.fire({
-        icon: "error",
-        title: "Ruta inválida",
-        text: "La ruta ingresada no es válida. Ejemplo:\n- Windows: C:\\Usuarios\\Carpeta\n- Linux/Mac: /home/usuario/carpeta",
-        confirmButtonText: "Aceptar",
-        background: "#ffffff",
-        confirmButtonColor: "#8b5cf6",
-        customClass: {
-          popup: "rounded-xl shadow-lg",
-          title: "font-bold text-lg",
-          confirmButton: "px-4 py-2",
-        },
-      }).then(() => setRuta(""))
-      return
-    }
 
     // Confirmación final antes de iniciar
     const result = await Swal.fire({
@@ -346,7 +318,6 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
     <div className="cert-container">
       <div className="cert-header">
         <h1 className="cert-title">CertiGranja</h1>
-        {/* Se eliminó el indicador de conexión del header */}
       </div>
 
       {/* Overlay de bloqueo cuando no hay conexión */}
@@ -390,6 +361,11 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
             placeholder="Ingresa la ruta de la carpeta" 
             disabled={isLoading || !conexion.conectado} 
           />
+          {ruta && !isFormValid() && (
+            <div className="validation-message">
+              Formato de ruta inválido. Ejemplo: C:\Usuarios\Carpeta o /home/usuario/carpeta
+            </div>
+          )}
         </div>
 
         {/* Botones de acción */}
@@ -397,7 +373,7 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
           <button 
             onClick={handleStartProcess} 
             className="cert-button" 
-            disabled={isLoading || !conexion.conectado}
+            disabled={isLoading || !conexion.conectado || !isFormValid()}
           >
             {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
           </button>
@@ -450,8 +426,8 @@ export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
           </div>
         )}
       </div>
-        {/* Modal de información */}
-        <InfoModalMasivo isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+      {/* Modal de información */}
+      <InfoModalMasivo isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     </div>
   )
 }

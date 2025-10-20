@@ -40,6 +40,11 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
   const fileInputRef = useRef(null)
   const intervalRef = useRef(null)
 
+  // Función para validar si el formulario está completo
+  const isFormValid = () => {
+    return nombreCarpeta.trim() && file && isUploaded && !errorMessage
+  }
+
   // Efecto para prevenir cierre de página durante procesos activos
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -116,7 +121,6 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
     setIsUploaded(false)
     
     if (!selectedFile) {
-      showAlert("warning", "Archivo no seleccionado", "Por favor selecciona un archivo antes de continuar.")
       return
     }
 
@@ -125,7 +129,6 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
     const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase()
     if (!allowedExtensions.includes(fileExtension || "")) {
       setErrorMessage("Formato inválido. Solo se permiten archivos Excel.")
-      showAlert("error", "Formato no válido", "Selecciona un archivo Excel (.xls, .xlsx)")
       if (fileInputRef.current) fileInputRef.current.value = ""
       return
     }
@@ -134,7 +137,6 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
     const maxSize = 5 * 1024 * 1024
     if (selectedFile.size > maxSize) {
       setErrorMessage("Archivo demasiado grande.")
-      showAlert("error", "Archivo demasiado grande", "El tamaño máximo permitido es de 5MB.")
       if (fileInputRef.current) fileInputRef.current.value = ""
       return
     }
@@ -176,6 +178,18 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
       }
     }
     reader.readAsArrayBuffer(selectedFile)
+  }
+
+  // Función para manejar arrastrar y soltar archivos
+  const handleFileDrop = (event) => {
+    if (!verificarConexion()) return
+    
+    event.preventDefault()
+    event.stopPropagation()
+    const droppedFile = event.dataTransfer.files[0]
+    if (droppedFile) {
+      handleFileSelect({ target: { files: [droppedFile] } })
+    }
   }
 
   // Función para crear carpeta en el servidor
@@ -356,18 +370,6 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
     }
   }
 
-  // Función para manejar arrastrar y soltar archivos
-  const handleFileDrop = (event) => {
-    if (!verificarConexion()) return
-    
-    event.preventDefault()
-    event.stopPropagation()
-    const droppedFile = event.dataTransfer.files[0]
-    if (droppedFile) {
-      handleFileSelect({ target: { files: [droppedFile] } })
-    }
-  }
-
   // Función para detener el proceso en ejecución
   const handleStopProcess = async () => {
     if (!verificarConexion()) return
@@ -432,7 +434,6 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
     <div className={styles.certContainer}>
       <div className={styles.certHeader}>
         <h1 className={styles.certTitle}>CertiGranja</h1>
-        {/* Se eliminó el indicador de conexión del header */}
       </div>
 
       {/* Overlay de bloqueo cuando no hay conexión */}
@@ -546,7 +547,7 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
           <button 
             onClick={handleUploadAndExecute} 
             className={styles.certButton} 
-            disabled={isLoading || !conexion.conectado}
+            disabled={isLoading || !conexion.conectado || !isFormValid()}
           >
             {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
           </button>
@@ -578,8 +579,8 @@ export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
           </div>
         )}
       </div>
-        {/* Modal de información */}
-        <InfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+      {/* Modal de información */}
+      <InfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     </div>
   )
 }

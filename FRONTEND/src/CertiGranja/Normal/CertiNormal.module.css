@@ -200,7 +200,7 @@
 }
 
 .certButton:disabled {
-  background: #9ca3af;
+  background: #16a34a;
   cursor: not-allowed;
   transform: none;
 }

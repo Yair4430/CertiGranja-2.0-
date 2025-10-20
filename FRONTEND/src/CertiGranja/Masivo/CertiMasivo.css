@@ -211,7 +211,7 @@ body {
 }
 
 .cert-button:disabled {
-  background: #9ca3af;
+  background: #7c3aed;
   cursor: not-allowed;
   transform: none;
 }
