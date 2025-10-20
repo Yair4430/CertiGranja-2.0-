@@ -32,6 +32,92 @@ CORS(app)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Agregar estos imports al inicio del archivo
+import requests
+import time
+
+# Agregar después de las importaciones existentes
+ESTADO_CONEXION = {
+    "conectado": True,
+    "ultima_verificacion": None
+}
+
+def verificar_conexion_internet():
+    """Verifica si hay conexión a internet intentando conectar a varios servicios"""
+    sitios_para_verificar = [
+        "https://www.google.com",
+        "https://www.cloudflare.com",
+        "https://www.github.com"
+    ]
+    
+    for sitio in sitios_para_verificar:
+        try:
+            respuesta = requests.get(sitio, timeout=5)
+            if respuesta.status_code == 200:
+                ESTADO_CONEXION["conectado"] = True
+                ESTADO_CONEXION["ultima_verificacion"] = time.time()
+                return True
+        except:
+            continue
+    
+    ESTADO_CONEXION["conectado"] = False
+    ESTADO_CONEXION["ultima_verificacion"] = time.time()
+    return False
+
+def verificar_conexion_endpoints():
+    """Verifica conexión específica a los endpoints que usa la aplicación"""
+    endpoints_importantes = [
+        "https://certvigenciacedula.registraduria.gov.co/",
+        "https://consultasrc.registraduria.gov.co/",
+        "https://apps.migracioncolombia.gov.co/"
+    ]
+    
+    for endpoint in endpoints_importantes:
+        try:
+            respuesta = requests.get(endpoint, timeout=10)
+            if respuesta.status_code == 200:
+                return True
+        except:
+            continue
+    
+    return False
+
+# Hilo para verificar conexión periódicamente
+def verificador_conexion_periodico():
+    """Verifica la conexión cada 30 segundos"""
+    while True:
+        verificar_conexion_internet()
+        time.sleep(30)
+
+# Iniciar el hilo de verificación de conexión
+threading.Thread(target=verificador_conexion_periodico, daemon=True).start()
+
+# Agregar esta ruta al backend (antes del if __name__)
+@app.route('/estado-conexion', methods=['GET'])
+def obtener_estado_conexion():
+    """Devuelve el estado actual de la conexión a internet"""
+    # Verificar conexión en tiempo real
+    estado_actual = verificar_conexion_internet()
+    
+    return jsonify({
+        "conectado": estado_actual,
+        "ultima_verificacion": ESTADO_CONEXION["ultima_verificacion"],
+        "endpoints_funcionando": verificar_conexion_endpoints() if estado_actual else False
+    })
+
+# Middleware para verificar conexión en rutas críticas
+@app.before_request
+def verificar_conexion_antes_de_request():
+    """Verifica conexión antes de procesar requests importantes"""
+    rutas_criticas = ['/iniciar-automatizacion', '/iniciar-automatizacion-masiva']
+    
+    if request.path in rutas_criticas:
+        if not ESTADO_CONEXION["conectado"]:
+            return jsonify({
+                "error": "Sin conexión a internet", 
+                "mensaje": "No se puede iniciar la automatización sin conexión a internet"
+            }), 503
+
 @app.route('/progreso', methods=['GET'])
 def obtener_progreso():
     """Devuelve el estado de progreso (carpetas y filas)."""

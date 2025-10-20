@@ -25,7 +25,7 @@ const showAlert = (type, title, text) => {
   })
 }
 
-export default function CertiNormal({ isLoading, setIsLoading }) {
+export default function CertiNormal({ isLoading, setIsLoading, conexion }) {
   // Estados para gestionar la carpeta, archivo y progreso
   const [nombreCarpeta, setNombreCarpeta] = useState("")
   const [file, setFile] = useState(null)
@@ -59,8 +59,24 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
     }
   }, [isLoading])
 
+  // Función para mostrar alerta de sin conexión
+  const mostrarAlertaSinConexion = () => {
+    showAlert("error", "Sin conexión a internet", "No se puede realizar esta acción sin conexión a internet. Por favor, verifica tu conexión.")
+  }
+
+  // Función para verificar conexión antes de acciones
+  const verificarConexion = () => {
+    if (!conexion.conectado) {
+      mostrarAlertaSinConexion()
+      return false
+    }
+    return true
+  }
+
   // Función para descargar la plantilla Excel
   const handleDownloadTemplate = async () => {
+    if (!verificarConexion()) return
+    
     if (templateDownloaded) {
       showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.")
       return
@@ -92,6 +108,8 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
 
   // Función para validar y procesar archivo Excel seleccionado
   const handleFileSelect = (event) => {
+    if (!verificarConexion()) return
+    
     const selectedFile = event.target.files[0]
     setErrorMessage("")
     setFileName("")
@@ -162,6 +180,8 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
 
   // Función para crear carpeta en el servidor
   const handleCrearCarpeta = async () => {
+    if (!verificarConexion()) return false
+    
     if (!nombreCarpeta.trim()) {
       showAlert("warning", "Nombre requerido", "Por favor ingresa un nombre de carpeta.")
       return false
@@ -236,6 +256,8 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
 
   // Función principal para iniciar el proceso completo
   const handleUploadAndExecute = async () => {
+    if (!verificarConexion()) return
+    
     if (!file) {
       showAlert("warning", "Ningún archivo seleccionado", "Selecciona un archivo primero.")
       return
@@ -336,6 +358,8 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
 
   // Función para manejar arrastrar y soltar archivos
   const handleFileDrop = (event) => {
+    if (!verificarConexion()) return
+    
     event.preventDefault()
     event.stopPropagation()
     const droppedFile = event.dataTransfer.files[0]
@@ -346,6 +370,8 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
 
   // Función para detener el proceso en ejecución
   const handleStopProcess = async () => {
+    if (!verificarConexion()) return
+    
     const result = await Swal.fire({
       icon: "warning",
       title: "¿Estás seguro?",
@@ -406,13 +432,34 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
     <div className={styles.certContainer}>
       <div className={styles.certHeader}>
         <h1 className={styles.certTitle}>CertiGranja</h1>
+        {/* Se eliminó el indicador de conexión del header */}
       </div>
 
-      <div className={styles.certContent}>
+      {/* Overlay de bloqueo cuando no hay conexión */}
+      {!conexion.conectado && (
+        <div className={styles.blockOverlay}>
+          <div className={styles.blockMessage}>
+            <div className={styles.offlineIcon}>🌐</div>
+            <h3>Sin conexión a internet</h3>
+            <p>La aplicación requiere conexión a internet para funcionar</p>
+            <p>Por favor, verifica tu conexión y espera a que se restablezca</p>
+          </div>
+        </div>
+      )}
+
+      <div className={`${styles.certContent} ${!conexion.conectado ? styles.blurred : ""}`}>
         {/* Iconos de recursos (descarga e información) */}
         <div className={styles.resourcesIcons}>
-          <FaFileDownload className={styles.downloadIconInline} onClick={handleDownloadTemplate} title="Descargar Plantilla"/>
-          <FaInfoCircle className={styles.downloadIconInline} onClick={() => setShowInfoModal(true)} title="Información de uso"/>
+          <FaFileDownload 
+            className={`${styles.downloadIconInline} ${!conexion.conectado ? styles.disabled : ""}`} 
+            onClick={conexion.conectado ? handleDownloadTemplate : undefined} 
+            title={conexion.conectado ? "Descargar Plantilla" : "Sin conexión"}
+          />
+          <FaInfoCircle 
+            className={`${styles.downloadIconInline} ${!conexion.conectado ? styles.disabled : ""}`} 
+            onClick={conexion.conectado ? () => setShowInfoModal(true) : undefined} 
+            title={conexion.conectado ? "Información de uso" : "Sin conexión"}
+          />
         </div>
 
         {/* Sección de configuración de carpeta */}
@@ -423,7 +470,14 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
           </h2>
           <div className={styles.folderSection}>
             <div className={styles.inputGroup}>
-              <input type="text" placeholder="Ingresa el nombre de la carpeta" value={nombreCarpeta} onChange={(e) => setNombreCarpeta(e.target.value)} className={styles.inputCarpeta} disabled={isLoading} />
+              <input 
+                type="text" 
+                placeholder="Ingresa el nombre de la carpeta" 
+                value={nombreCarpeta} 
+                onChange={(e) => setNombreCarpeta(e.target.value)} 
+                className={styles.inputCarpeta} 
+                disabled={isLoading || !conexion.conectado} 
+              />
             </div>
           </div>
         </div>
@@ -436,17 +490,19 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
           </h2>
           <div className={styles.uploadSection}>
             <div
-              className={`${styles.fileUploader} ${isUploaded ? styles.uploaded : ""} ${errorMessage ? styles.error : ""}`}
-              onClick={() => !isLoading && fileInputRef.current?.click()}
+              className={`${styles.fileUploader} ${isUploaded ? styles.uploaded : ""} ${errorMessage ? styles.error : ""} ${!conexion.conectado ? styles.disabled : ""}`}
+              onClick={() => conexion.conectado && !isLoading && fileInputRef.current?.click()}
               role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
+              tabIndex={conexion.conectado ? 0 : -1}
+              onKeyDown={(e) => conexion.conectado && e.key === "Enter" && !isLoading && fileInputRef.current?.click()}
               onDragOver={(e) => {
+                if (!conexion.conectado) return
                 e.preventDefault()
                 e.stopPropagation()
                 e.currentTarget.classList.add(styles.dragOver)
               }}
               onDragLeave={(e) => {
+                if (!conexion.conectado) return
                 e.preventDefault()
                 e.stopPropagation()
                 e.currentTarget.classList.remove(styles.dragOver)
@@ -473,19 +529,36 @@ export default function CertiNormal({ isLoading, setIsLoading }) {
                   Archivo cargado correctamente
                 </div>
               )}
-              <input type="file" ref={fileInputRef} onChange={handleFileSelect} className={styles.fileInput} accept=".xls,.xlsx" disabled={isLoading}/>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileSelect} 
+                className={styles.fileInput} 
+                accept=".xls,.xlsx" 
+                disabled={isLoading || !conexion.conectado}
+              />
             </div>
           </div>
         </div>
 
         {/* Botones de acción */}
         <div className={styles.buttonRow}>
-          <button onClick={handleUploadAndExecute} className={styles.certButton} disabled={isLoading}>
+          <button 
+            onClick={handleUploadAndExecute} 
+            className={styles.certButton} 
+            disabled={isLoading || !conexion.conectado}
+          >
             {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
           </button>
 
           {isLoading && (
-            <button onClick={handleStopProcess} className={`${styles.certButton} ${styles.stopButton}`}> Detener Proceso </button>
+            <button 
+              onClick={handleStopProcess} 
+              className={`${styles.certButton} ${styles.stopButton}`}
+              disabled={!conexion.conectado}
+            > 
+              Detener Proceso 
+            </button>
           )}
         </div>
 

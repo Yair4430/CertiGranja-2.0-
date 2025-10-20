@@ -1,35 +1,83 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import CertiNormal from "./Normal/certiNormal"
-import CertiMasivo from "./Masivo/CertiMasivo"
+import CertiMasivo from "./Masivo/certiMasivo"
 import "./central.css"
 
 function Central() {
-  // ESTADOS PRINCIPALES: Controlan el modo de operación y el estado de carga
+  // ESTADOS PRINCIPALES
   const [modo, setModo] = useState("normal")
   const [isLoadingNormal, setIsLoadingNormal] = useState(false)
   const [isLoadingMasivo, setIsLoadingMasivo] = useState(false)
+  const [conexion, setConexion] = useState({
+    conectado: true,
+    verificando: false,
+    ultimaVerificacion: null
+  })
 
-  // VERIFICACIÓN DE PROCESAMIENTO: Evita cambios durante operaciones activas
-  const isAnyProcessing = isLoadingNormal || isLoadingMasivo
-
-  // MANEJADOR DE CAMBIO DE MODO: Permite alternar entre normal y masivo
-  const handleModeSwitch = () => {
-    if (!isAnyProcessing) {
-      setModo(modo === "normal" ? "masivo" : "normal")
+  // VERIFICACIÓN DE CONEXIÓN PERIÓDICA
+  useEffect(() => {
+    const verificarConexion = async () => {
+      if (conexion.verificando) return;
+      
+      setConexion(prev => ({ ...prev, verificando: true }))
+      
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/estado-conexion`)
+        const data = await response.json()
+        
+        const estabaConectado = conexion.conectado
+        const ahoraConectado = data.conectado
+        
+        setConexion({
+          conectado: ahoraConectado,
+          verificando: false,
+          ultimaVerificacion: data.ultima_verificacion
+        })
+        
+      } catch (error) {
+        const estabaConectado = conexion.conectado
+        
+        setConexion({
+          conectado: false,
+          verificando: false,
+          ultimaVerificacion: null
+        })
+      }
     }
+
+    // Verificar inmediatamente al cargar
+    verificarConexion()
+
+    // Verificar cada 15 segundos
+    const intervalo = setInterval(verificarConexion, 15000)
+
+    return () => clearInterval(intervalo)
+  }, [conexion.conectado])
+
+  // VERIFICACIÓN DE PROCESAMIENTO Y CONEXIÓN
+  const isAnyProcessing = isLoadingNormal || isLoadingMasivo
+  const puedeCambiarModo = !isAnyProcessing && conexion.conectado
+
+  // MANEJADOR DE CAMBIO DE MODO
+  const handleModeSwitch = () => {
+    if (!puedeCambiarModo) {
+      return
+    }
+    setModo(modo === "normal" ? "masivo" : "normal")
   }
 
   return (
     <div className="App">
-      {/* SWITCH ANIMADO: Interfaz para cambiar entre modos con feedback visual */}
+
+      {/* SWITCH ANIMADO */}
       <motion.div
-        className={`switch ${modo} ${isAnyProcessing ? "disabled" : ""}`}
+        className={`switch ${modo} ${!puedeCambiarModo ? "disabled" : ""}`}
         onClick={handleModeSwitch}
-        whileTap={!isAnyProcessing ? { scale: 0.9 } : {}} // Solo anima si no hay procesamiento activo
+        whileTap={puedeCambiarModo ? { scale: 0.9 } : {}}
         style={{
-          opacity: isAnyProcessing ? 0.5 : 1,
-          cursor: isAnyProcessing ? "not-allowed" : "pointer",
+          opacity: !puedeCambiarModo ? 0.5 : 1,
+          cursor: !puedeCambiarModo ? "not-allowed" : "pointer",
         }}
       >
         <motion.div
@@ -37,7 +85,6 @@ function Central() {
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           className={`switch-slider ${modo}`}
         >
-          {/* ANIMACIÓN DE TEXTO: Transición suave entre "Normal" y "Masivo" */}
           <AnimatePresence mode="wait">
             <motion.span
               key={modo}
@@ -52,7 +99,7 @@ function Central() {
         </motion.div>
       </motion.div>
 
-      {/* CONTENIDO DINÁMICO: Renderiza el componente correspondiente al modo activo */}
+      {/* CONTENIDO DINÁMICO */}
       <AnimatePresence mode="wait">
         <motion.div
           key={modo}
@@ -62,11 +109,19 @@ function Central() {
           transition={{ duration: 0.6, ease: "easeInOut" }}
           className="contenido"
         >
-          {/* COMPONENTE CONDICIONAL: Muestra CertiNormal o CertiMasivo según el modo */}
+          {/* COMPONENTE CONDICIONAL CON PROP DE CONEXIÓN */}
           {modo === "normal" ? (
-            <CertiNormal isLoading={isLoadingNormal} setIsLoading={setIsLoadingNormal} />
+            <CertiNormal 
+              isLoading={isLoadingNormal} 
+              setIsLoading={setIsLoadingNormal}
+              conexion={conexion}
+            />
           ) : (
-            <CertiMasivo isLoading={isLoadingMasivo} setIsLoading={setIsLoadingMasivo} />
+            <CertiMasivo 
+              isLoading={isLoadingMasivo} 
+              setIsLoading={setIsLoadingMasivo}
+              conexion={conexion}
+            />
           )}
         </motion.div>
       </AnimatePresence>

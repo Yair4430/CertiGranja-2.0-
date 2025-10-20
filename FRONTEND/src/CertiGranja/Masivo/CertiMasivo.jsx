@@ -24,7 +24,7 @@ const showAlert = (type, title, text) => {
   })
 }
 
-export default function CertiMasivo({ isLoading, setIsLoading }) {
+export default function CertiMasivo({ isLoading, setIsLoading, conexion }) {
   // Estados para gestionar la ruta, progreso y UI
   const [ruta, setRuta] = useState("")
   const [totalCarpetas, setTotalCarpetas] = useState(0)
@@ -51,6 +51,20 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [isLoading])
+
+  // Función para mostrar alerta de sin conexión
+  const mostrarAlertaSinConexion = () => {
+    showAlert("error", "Sin conexión a internet", "No se puede realizar esta acción sin conexión a internet. Por favor, verifica tu conexión.")
+  }
+
+  // Función para verificar conexión antes de acciones
+  const verificarConexion = () => {
+    if (!conexion.conectado) {
+      mostrarAlertaSinConexion()
+      return false
+    }
+    return true
+  }
 
   // Función para consultar el progreso del proceso al servidor
   const fetchProgress = async () => {
@@ -92,6 +106,8 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
 
   // Función principal para iniciar el proceso de automatización
   const handleStartProcess = async () => {
+    if (!verificarConexion()) return
+    
     // Validaciones de entrada de ruta
     if (!ruta.trim()) {
       Swal.fire({
@@ -215,6 +231,8 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
 
   // Función para descargar plantilla Excel
   const handleDownloadTemplate = async () => {
+    if (!verificarConexion()) return
+    
     if (templateDownloaded) {
       showAlert("info", "Plantilla ya descargada", "Ya has descargado la plantilla anteriormente.")
       return
@@ -260,6 +278,8 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
 
   // Función para detener el proceso en ejecución
   const handleStopProcess = async () => {
+    if (!verificarConexion()) return
+    
     const result = await Swal.fire({
       icon: "warning",
       title: "¿Estás seguro?",
@@ -326,13 +346,34 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
     <div className="cert-container">
       <div className="cert-header">
         <h1 className="cert-title">CertiGranja</h1>
+        {/* Se eliminó el indicador de conexión del header */}
       </div>
 
-      <div className="cert-content">
+      {/* Overlay de bloqueo cuando no hay conexión */}
+      {!conexion.conectado && (
+        <div className="block-overlay">
+          <div className="block-message">
+            <div className="offline-icon">🌐</div>
+            <h3>Sin conexión a internet</h3>
+            <p>La aplicación requiere conexión a internet para funcionar</p>
+            <p>Por favor, verifica tu conexión y espera a que se restablezca</p>
+          </div>
+        </div>
+      )}
+
+      <div className={`cert-content ${!conexion.conectado ? "blurred" : ""}`}>
         {/* Iconos de recursos (descarga e información) */}
         <div className="resources-icons">
-          <FaFileDownload className="download-icon-inline icon-verde" onClick={handleDownloadTemplate} title="Descargar Plantilla"/>
-          <FaInfoCircle className="download-icon-inline icon-verde" onClick={() => setShowInfoModal(true)} title="Información de uso"/>
+          <FaFileDownload 
+            className={`download-icon-inline icon-verde ${!conexion.conectado ? "disabled" : ""}`} 
+            onClick={conexion.conectado ? handleDownloadTemplate : undefined} 
+            title={conexion.conectado ? "Descargar Plantilla" : "Sin conexión"}
+          />
+          <FaInfoCircle 
+            className={`download-icon-inline icon-verde ${!conexion.conectado ? "disabled" : ""}`} 
+            onClick={conexion.conectado ? () => setShowInfoModal(true) : undefined} 
+            title={conexion.conectado ? "Información de uso" : "Sin conexión"}
+          />
         </div>
 
         {/* Sección de configuración de carpeta */}
@@ -341,17 +382,34 @@ export default function CertiMasivo({ isLoading, setIsLoading }) {
             <FaFolderOpen className="folder-icon" />
             <h2 className="folder-title">Ruta de la carpeta principal</h2>
           </div>
-          <input type="text" value={ruta} onChange={(e) => setRuta(e.target.value)} className="folder-input" placeholder="Ingresa la ruta de la carpeta" disabled={isLoading} />
+          <input 
+            type="text" 
+            value={ruta} 
+            onChange={(e) => setRuta(e.target.value)} 
+            className="folder-input" 
+            placeholder="Ingresa la ruta de la carpeta" 
+            disabled={isLoading || !conexion.conectado} 
+          />
         </div>
 
         {/* Botones de acción */}
         <div className="button-row">
-          <button onClick={handleStartProcess} className="cert-button" disabled={isLoading}>
+          <button 
+            onClick={handleStartProcess} 
+            className="cert-button" 
+            disabled={isLoading || !conexion.conectado}
+          >
             {isLoading ? "Procesando..." : "Iniciar Procesamiento"}
           </button>
 
           {isLoading && (
-            <button onClick={handleStopProcess} className="cert-button stop-button"> Detener Proceso </button>
+            <button 
+              onClick={handleStopProcess} 
+              className="cert-button stop-button"
+              disabled={!conexion.conectado}
+            > 
+              Detener Proceso 
+            </button>
           )}
         </div>
 
