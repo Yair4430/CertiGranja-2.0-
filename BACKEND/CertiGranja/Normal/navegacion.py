@@ -72,7 +72,7 @@ def automatizar_navegacion(datos, carpeta_destino=None):
             raise ValueError("Faltan variables de entorno en el archivo .env")
 
         # Parámetros configurables
-        REINTENTOS_POR_FILA = int(os.getenv("REINTENTOS_POR_FILA", 10))
+        REINTENTOS_POR_FILA = int(os.getenv("REINTENTOS_POR_FILA", 50))
         RETRY_SLEEP_SECONDS = float(os.getenv("RETRY_SLEEP_SECONDS", 2.0))
         DOWNLOAD_WAIT_ITER = int(os.getenv("DOWNLOAD_WAIT_ITER", 10))
         DOWNLOAD_WAIT_SLEEP = float(os.getenv("DOWNLOAD_WAIT_SLEEP", 1.0))
@@ -151,39 +151,39 @@ def automatizar_navegacion(datos, carpeta_destino=None):
                     ).click()
 
                     # Completar form
-                    WebDriverWait(driver, 5).until(
+                    WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_TextBox1"))
                     ).clear()
-                    WebDriverWait(driver, 5).until(
+                    WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_TextBox1"))
                     ).send_keys(str(row["NUMERO DE DOCUMENTO"]))
 
-                    Select(WebDriverWait(driver, 5).until(
+                    Select(WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_DropDownList1"))
                     )).select_by_visible_text(str(row["DIA"]).zfill(2))
 
                     mes_normalizado = str(row["MES"]).capitalize()
-                    Select(WebDriverWait(driver, 5).until(
+                    Select(WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_DropDownList2"))
                     )).select_by_visible_text(mes_normalizado)
 
-                    Select(WebDriverWait(driver, 5).until(
+                    Select(WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_DropDownList3"))
                     )).select_by_visible_text(str(row["AÑO"]))
 
-                    WebDriverWait(driver, 5).until(
+                    WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_TextBox2"))
                     ).clear()
-                    WebDriverWait(driver, 5).until(
+                    WebDriverWait(driver, 1.5).until(
                         EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_TextBox2"))
                     ).send_keys("LANAP")
 
-                    WebDriverWait(driver, 5).until(
+                    WebDriverWait(driver, 1.5).until(
                         EC.element_to_be_clickable((By.ID, "ContentPlaceHolder1_Button1"))
                     ).click()
 
                     # Dar tiempo a que la página procese y genere mensajes / pdf
-                    time.sleep(1.2)
+                    time.sleep(0.5)
 
                     # Verificar mensaje específico (documento no encontrado, CAPTCHA, u otra novedad)
                     try:
