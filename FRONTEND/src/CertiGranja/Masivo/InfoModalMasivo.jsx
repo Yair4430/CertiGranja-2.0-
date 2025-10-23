@@ -1,4 +1,4 @@
-import { FaInfoCircle, FaTimes, FaFolder, FaPlay, FaDatabase, FaRobot, FaFilePdf, FaBook } from "react-icons/fa"
+import { FaInfoCircle, FaTimes, FaFolder, FaPlay, FaDatabase, FaRobot, FaFilePdf, FaBook, FaFileExcel, FaSearch, FaDownload, FaCogs } from "react-icons/fa"
 import styles from "./infoModalMasivo.module.css"
 
 // Componente modal que muestra información detallada sobre el proceso masivo
@@ -9,7 +9,7 @@ export default function InfoModalMasivo({ isOpen, onClose }) {
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         
-        {/* --- Encabezado del Modal --- */}
+        {/* --- CABECERA DEL MODAL --- */}
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>
             <FaInfoCircle className={styles.modalIcon} />
@@ -20,14 +20,14 @@ export default function InfoModalMasivo({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* --- Cuerpo del Modal - Contiene todas las secciones informativas --- */}
+        {/* --- CUERPO PRINCIPAL --- */}
         <div className={styles.modalBody}>
           
-          {/* Sección: Descripción general del sistema */}
+          {/* DESCRIPCIÓN GENERAL */}
           <div className={styles.infoSection}>
             <h3 className={styles.sectionHeader}>
-              <FaPlay className={styles.stepIcon} />
-              Descripción del Sistema
+              <FaCogs className={styles.stepIcon} />
+              Sistema de Procesamiento Masivo
             </h3>
             <p className={styles.infoText}>
               El módulo masivo de <strong>CertiGranja</strong> permite procesar múltiples carpetas de forma
@@ -37,23 +37,26 @@ export default function InfoModalMasivo({ isOpen, onClose }) {
             </p>
           </div>
 
-          {/* Sección: Requisitos de estructura de carpetas */}
+          {/* ESTRUCTURA DE CARPETAS REQUERIDA */}
           <div className={styles.infoSection}>
             <h3 className={styles.sectionHeader}>
               <FaFolder className={styles.stepIcon} />
-              Estructura de Carpetas
+              Estructura Requerida
             </h3>
-            <p className={styles.infoText}>
-              En la carpeta principal que selecciones, cada subcarpeta debe contener:
-            </p>
-            <ul className={styles.instructionList}>
-              <li>Un archivo Excel válido con los documentos.</li>
-              <li>El sistema procesará cada carpeta de forma independiente.</li>
-              <li>Al finalizar, cada carpeta se renombrará con un guion bajo (<code>_</code>).</li>
-            </ul>
+            <div className={styles.structureTypes}>
+              <div className={styles.structureItem}>
+                <strong>📁 Subcarpetas:</strong> Cada subcarpeta debe contener un archivo Excel válido
+              </div>
+              <div className={styles.structureItem}>
+                <strong>📊 Archivos Excel:</strong> Formato específico con información de documentos
+              </div>
+              <div className={styles.structureItem}>
+                <strong>🔍 Procesamiento Individual:</strong> Cada carpeta se procesa de forma independiente
+              </div>
+            </div>
           </div>
 
-          {/* Sección: Pasos del proceso de automatización */}
+          {/* PROCESO DE AUTOMATIZACIÓN */}
           <div className={styles.infoSection}>
             <h3 className={styles.sectionHeader}>
               <FaRobot className={styles.stepIcon} />
@@ -62,72 +65,155 @@ export default function InfoModalMasivo({ isOpen, onClose }) {
             <div className={styles.processSteps}>
               <div className={styles.step}>
                 <span className={styles.stepNumber}>1</span>
-                <div className={styles.stepContent}><strong>Búsqueda:</strong> Detecta subcarpetas y archivos Excel.</div>
+                <div className={styles.stepContent}>
+                  <strong>Búsqueda Inicial:</strong> Detecta subcarpetas y archivos Excel en el directorio principal
+                </div>
               </div>
               <div className={styles.step}>
                 <span className={styles.stepNumber}>2</span>
-                <div className={styles.stepContent}><strong>Navegación:</strong> Automatiza la descarga de certificados.</div>
+                <div className={styles.stepContent}>
+                  <strong>Navegación Automatizada:</strong> Automatiza la descarga de certificados desde la página de la registraduría
+                </div>
+              </div>
+              <div className={styles.step}>
+                <span className={styles.stepNumber}>3</span>
+                <div className={styles.stepContent}>
+                  <strong>Procesamiento por Carpeta:</strong> Cada carpeta se procesa individualmente con su archivo Excel
+                </div>
               </div>
               <div className={styles.step}>
                 <span className={styles.stepNumber}>4</span>
-                <div className={styles.stepContent}><strong>Finalización:</strong> Carpeta procesada se marca con <code>_</code>.</div>
+                <div className={styles.stepContent}>
+                  <strong>Finalización:</strong> Carpeta procesada se marca con <code>_</code> al final del nombre
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Sección: Tipos de resultados posibles */}
+          {/* TIPOS DE RESULTADOS */}
           <div className={styles.infoSection}>
             <h3 className={styles.sectionHeader}>
               <FaFilePdf className={styles.stepIcon} />
               Resultados del Proceso
             </h3>
-            <div className={styles.resultTypes}>
-              <div className={styles.resultType}>
+            <div className={styles.resultSection}>
+              <div className={styles.resultItem}>
                 <div className={styles.statusBadge} style={{ backgroundColor: "#00FF00" }}>ÉXITO</div>
-                <span>Certificados descargados</span>
+                <div>
+                  <strong>Certificados Descargados:</strong> Todos los documentos se procesaron correctamente
+                </div>
               </div>
-              <div className={styles.resultType}>
+              <div className={styles.resultItem}>
                 <div className={styles.statusBadge} style={{ backgroundColor: "#FFFF00", color: "#000" }}>NOVEDAD</div>
-                <span>Algunos documentos con observaciones, Perdida de documento o Fallecimiento por parte de la persona.</span>
+                <div>
+                  <strong>Documentos con Observaciones:</strong> Algunos documentos presentan novedades como pérdida de documento o fallecimiento
+                </div>
               </div>
-              <div className={styles.resultType}>
+              <div className={styles.resultItem}>
                 <div className={styles.statusBadge} style={{ backgroundColor: "#FF0000" }}>FALLIDO</div>
-                <span>No se encontraron documentos válidos.</span>
+                <div>
+                  <strong>Sin Documentos Válidos:</strong> No se encontraron documentos válidos para procesar
+                </div>
               </div>
-              <div className={styles.resultType}>
+              <div className={styles.resultItem}>
                 <div className={styles.statusBadge} style={{ backgroundColor: "#808080" }}>ERROR</div>
-                <span>Error durante la descarga o procesamiento por la pagina e la registraduria.</span>
+                <div>
+                  <strong>Error de Procesamiento:</strong> Error durante la descarga o procesamiento por la página de la registraduría
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Sección: Instrucciones paso a paso para el usuario */}
+          {/* INFORMACIÓN PROCESADA */}
+          <div className={styles.infoSection}>
+            <h3 className={styles.sectionHeader}>
+              <FaDatabase className={styles.stepIcon} />
+              Información Procesada
+            </h3>
+            <div className={styles.dataExtracted}>
+              <div className={styles.dataItem}>• Validación de documentos desde archivos Excel</div>
+              <div className={styles.dataItem}>• Descarga automatizada de certificados</div>
+              <div className={styles.dataItem}>• Generación de resultados por cada carpeta procesada</div>
+              <div className={styles.dataItem}>• Marcado de carpetas procesadas exitosamente</div>
+            </div>
+          </div>
+
+          {/* RESULTADOS Y EXPORTACIÓN */}
+          <div className={styles.infoSection}>
+            <h3 className={styles.sectionHeader}>
+              <FaFileExcel className={styles.stepIcon} />
+              Resultados y Exportación
+            </h3>
+            <div className={styles.resultSection}>
+              <div className={styles.resultItem}>
+                <FaDownload className={styles.resultIcon} />
+                <div>
+                  <strong>Certificados Descargados:</strong> Los certificados se descargan directamente en cada subcarpeta procesada
+                </div>
+              </div>
+              <div className={styles.resultItem}>
+                <FaDatabase className={styles.resultIcon} />
+                <div>
+                  <strong>Excel con Resultados:</strong> Cada carpeta genera un archivo Excel con el resumen de las descargas realizadas
+                </div>
+              </div>
+              <div className={styles.resultItem}>
+                <FaSearch className={styles.resultIcon} />
+                <div>
+                  <strong>Validaciones Integradas:</strong> El sistema incluye validaciones para asegurar la calidad del procesamiento
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* INSTRUCCIONES DE USO */}
           <div className={styles.infoSection}>
             <h3 className={styles.sectionHeader}>
               <FaBook className={styles.stepIcon} />
-              Instrucciones de Uso
+              Instrucciones de Uso - Procesamiento Masivo
             </h3>
             <ol className={styles.instructionList}>
-              <li>Descarga la plantilla Excel.</li>
-              <li>Llénala con los documentos requeridos.</li>
-              <li>Crea una carpeta General con sus subcarpetas.</li>
-              <li>Coloca el Excel en cada subcarpeta.</li>
-              <li>Escriba la ruta de la carpeta principal en el aplicativo.</li>
-              <li>Haz clic en "Iniciar Procesamiento".</li>
-              <li>Los resultados estarán en las carpetas procesadas.</li>
+              <li>Descarga la <strong>plantilla Excel</strong> proporcionada por el sistema</li>
+              <li>Llena la plantilla con los <strong>documentos requeridos</strong> en el formato especificado</li>
+              <li>Crea una <strong>carpeta general</strong> que contenga todas las subcarpetas a procesar</li>
+              <li>Coloca el archivo Excel en <strong>cada subcarpeta</strong> individual</li>
+              <li>Escribe la <strong>ruta de la carpeta principal</strong> en el aplicativo</li>
+              <li>Haz clic en <strong>"Iniciar Procesamiento"</strong></li>
+              <li>Los <strong>resultados estarán en las carpetas procesadas</strong> marcadas con guion bajo</li>
             </ol>
           </div>
 
-          {/* Sección: Advertencias y consideraciones importantes */}
+          {/* FORMATOS SOPORTADOS */}
+          <div className={styles.infoSection}>
+            <h3 className={styles.sectionHeader}>
+              <FaFolder className={styles.stepIcon} />
+              Formatos de Entrada Soportados
+            </h3>
+            <div className={styles.supportedFormats}>
+              <div className={styles.formatItem}>
+                <strong>📁 Carpetas:</strong> Estructura de subcarpetas con archivos Excel individuales
+              </div>
+              <div className={styles.formatItem}>
+                <strong>📊 Archivos Excel:</strong> Formato específico con columnas definidas para el procesamiento
+              </div>
+              <div className={styles.formatItem}>
+                <strong>🔄 Procesamiento Individual:</strong> Cada carpeta se procesa de forma independiente
+              </div>
+            </div>
+          </div>
+
+          {/* CONSIDERACIONES TÉCNICAS */}
           <div className={styles.warningSection}>
-            <h4 className={styles.warningTitle}>⚠️ Consideraciones Importantes</h4>
+            <h4 className={styles.warningTitle}>🔧 Consideraciones Técnicas Importantes</h4>
             <ul className={styles.warningList}>
-              <li>Requiere conexión a internet estable.</li>
-              <li>No cierres el navegador ni la aplicación durante el proceso.</li>
-              <li>Los datos deben coincidir con los registros oficiales.</li>
-              <li>El tiempo puede variar según la cantidad de datos rpocesados por carpeta.</li>
+              <li>Requiere <strong>conexión a internet estable</strong> durante todo el proceso</li>
+              <li>No cierres el <strong>navegador ni la aplicación</strong> durante el procesamiento</li>
+              <li>Los datos deben <strong>coincidir con los registros oficiales</strong> de la registraduría</li>
+              <li>El tiempo de procesamiento varía según la <strong>cantidad de datos por carpeta</strong></li>
+              <li>El sistema es <strong>no bloqueante</strong> pero requiere supervisión constante</li>
             </ul>
           </div>
+
         </div>
       </div>
     </div>
