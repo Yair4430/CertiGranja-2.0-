@@ -1,9 +1,52 @@
+/* Agrega esto al final de tu archivo CSS para hacer el footer fijo al final de la página */
+
+.footer {
+  position: fixed;
+  bottom: 50px; /* 👈 lo sube justo donde marcaste en rojo */
+  left: 0;
+  right: 0;
+  width: 100%;
+  
+  display: flex; /* 👈 nuevo - usa flexbox */
+  justify-content: center; /* 👈 nuevo - centra horizontalmente */
+  align-items: center; /* 👈 nuevo - centra verticalmente si hay altura extra */
+  
+  background: transparent;
+  text-align: center;
+  
+  padding: 12px 20px;
+  font-size: 17px;
+  
+  z-index: 1000;
+}
+
+.footer p {
+  margin: 0; /* Elimina márgenes por defecto */
+  line-height: 1.4; /* Espaciado de línea más compacto para letras más arriba */
+}
+
+/* Colores dinámicos según el modo */
+.footer.normal b,
+.footer.normal span,
+.footer.normal a {
+  color: #16a34a; /* Verde para modo normal */
+}
+
+.footer.masivo b,
+.footer.masivo span,
+.footer.masivo a {
+  color: #8b5cf6; /* Morado para modo masivo */
+}
+
+/* Asegúrate de que el body o .App tenga padding-bottom para evitar que el contenido se superponga */
 .App {
   padding: 20px;
   text-align: center;
+  padding-bottom: 80px; /* Ajusta según la altura del footer */
 }
 
-/* Switch */
+/* El resto de tu CSS original sigue aquí... */
+
 .switch {
   width: 220px;
   height: 55px;
@@ -19,7 +62,6 @@
   overflow: hidden;
 }
 
-/* Efecto glow */
 .switch.normal {
   background: linear-gradient(135deg, #22c55e, #16a34a);
   justify-content: flex-start;
@@ -27,13 +69,11 @@
 }
 
 .switch.masivo {
-  /* Cambiado de azul a morado */
   background: linear-gradient(135deg, #a855f7, #8b5cf6);
   justify-content: flex-end;
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
 }
 
-/* Botón */
 .switch-slider {
   width: 110px;
   height: 43px;
@@ -49,22 +89,18 @@
   overflow: hidden;
 }
 
-/* Texto con color */
 .switch-slider.normal span {
   color: #16a34a;
 }
 
 .switch-slider.masivo span {
-  /* Cambiado de azul a morado */
   color: #8b5cf6;
 }
 
-/* Contenido */
 .contenido {
   min-height: 200px;
 }
 
-/* Indicador de conexión mejorado */
 .conexion-indicator {
   display: flex;
   align-items: center;
@@ -109,7 +145,6 @@
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
 
-/* Botón de reintentar */
 .btn-reintentar {
   background: none;
   border: none;
@@ -131,7 +166,6 @@
   50% { opacity: 0.7; }
 }
 
-/* Overlay de bloqueo cuando no hay conexión */
 .bloqueo-sin-conexion {
   position: fixed;
   top: 0;
@@ -165,4 +199,17 @@
   color: #666;
   margin-bottom: 20px;
   line-height: 1.5;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1; /* 👈 ocupa todo el espacio disponible */
+  display: flex;
+  justify-content: center; /* centra horizontal */
+  align-items: center;     /* centra vertical */
 }

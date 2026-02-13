@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time, traceback, os, glob, shutil
 import pandas as pd
 
-#Importacion de los componentes
+# Importacion de los componentes
 from .leerExcel import leer_excel  
 from .generarResultados import generar_resultados
 
@@ -335,9 +335,15 @@ def automatizar_navegacion(datos, carpeta_destino=None):
         traceback.print_exc()
     finally:
         if driver:
-            print("Esperando unos segundos para asegurar descargas completas...")
-            time.sleep(1)
-            driver.quit()
+            if detener_proceso:
+                # Si el proceso fue detenido manualmente, cerrar inmediatamente sin esperar
+                print("Proceso detenido manualmente. Cerrando navegador inmediatamente...")
+                driver.quit()
+            else:
+                # Si terminó normalmente, esperar para asegurar descargas completas
+                print("Esperando unos segundos para asegurar descargas completas...")
+                time.sleep(1)
+                driver.quit()
 
         # Guardar resultados
         resultados_df = pd.DataFrame(resultados)

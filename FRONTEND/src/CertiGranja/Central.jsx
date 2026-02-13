@@ -99,34 +99,51 @@ function Central() {
         </motion.div>
       </motion.div>
 
-      {/* CONTENIDO DINÁMICO */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={modo}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="contenido"
-        >
-          {/* COMPONENTE CONDICIONAL CON PROP DE CONEXIÓN */}
-          {modo === "normal" ? (
-            <CertiNormal 
-              isLoading={isLoadingNormal} 
-              setIsLoading={setIsLoadingNormal}
-              conexion={conexion}
-            />
-          ) : (
-            <CertiMasivo 
-              isLoading={isLoadingMasivo} 
-              setIsLoading={setIsLoadingMasivo}
-              conexion={conexion}
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
+    {/* CONTENIDO DINÁMICO */}
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={modo}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className="contenido"
+      >
+        {modo === "normal" ? (
+          <CertiNormal 
+            isLoading={isLoadingNormal} 
+            setIsLoading={setIsLoadingNormal}
+            conexion={conexion}
+          />
+        ) : (
+          <CertiMasivo 
+            isLoading={isLoadingMasivo} 
+            setIsLoading={setIsLoadingMasivo}
+            conexion={conexion}
+          />
+        )}
+      </motion.div>
+    </AnimatePresence>
+
+    {/* FOOTER SEPARADO Y ANIMADO */}
+    <AnimatePresence mode="wait">
+      <motion.footer
+        key={modo}
+        className={`footer ${modo}`}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+      >
+        <p>
+          © 2026 <b>CertiGranja</b> — Desarrollado por{" "}
+          <b>Yair Alexander Cardenas Guzman</b> | Contacto:{" "}
+          <a href="mailto:yairguz2523@gmail.com">yairguz2523@gmail.com</a>
+        </p>
+      </motion.footer>
+    </AnimatePresence>
     </div>
-  )
+  );
 }
 
 export default Central
